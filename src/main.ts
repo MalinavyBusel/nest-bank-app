@@ -1,17 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.connectMicroservice({
-    transport: Transport.TCP,
-    options: {
-      port: 3001,
-    },
-  });
-  await app.startAllMicroservices();
+  const config = new DocumentBuilder()
+    .setTitle('bank app')
+    .setDescription('the description of the bank management app api')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);
 }

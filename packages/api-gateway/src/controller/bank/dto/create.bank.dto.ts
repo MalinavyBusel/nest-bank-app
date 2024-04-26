@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateBankDto implements Bank {
   @ApiProperty({
     description:
-      'the comission percent for transactions where entity client sends money to another banks account',
+      'the comission percent for transactions where entity client sends money to another bank account',
   })
   @Min(0)
   @Max(100)
@@ -13,7 +13,7 @@ export class CreateBankDto implements Bank {
 
   @ApiProperty({
     description:
-      'the comission percent for transactions where individual client sends money to another banks account',
+      'the comission percent for transactions where individual client sends money to another bank account',
   })
   @Min(0)
   @Max(100)

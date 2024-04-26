@@ -16,7 +16,7 @@ export class AppController {
   //   return await this.appService.create(data);
   // }
 
-  @MessagePattern({ cmd: 'find-banks' })
+  @MessagePattern({ cmd: 'find-bank' })
   async find(filter: any): Promise<(Bank & WithId)[]> {
     return await this.appService.find(filter);
   }

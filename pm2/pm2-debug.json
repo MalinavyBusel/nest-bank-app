@@ -5,8 +5,8 @@
       "script": "yarn start:api-gateway:debug"
     },
     {
-      "name": "banks",
-      "script": "yarn start:banks:debug"
+      "name": "bank",
+      "script": "yarn start:bank:debug"
     }
   ]
 }

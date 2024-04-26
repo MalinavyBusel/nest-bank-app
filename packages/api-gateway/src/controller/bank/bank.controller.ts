@@ -42,7 +42,7 @@ export class BankController {
   @ApiOkResponse({ type: [ResponseBankDto] })
   @Post('search')
   find() {
-    return this.tcpBankService.send({ cmd: 'find-banks' }, '');
+    return this.tcpBankService.send({ cmd: 'find-bank' }, '');
   }
 
   @ApiOperation({

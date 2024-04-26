@@ -1,5 +1,5 @@
-import { Client, clientTypes } from 'common-model';
+import { Client, clientTypesEnum } from 'common-model';
 export declare class CreateClientDto implements Client {
     name: string;
-    type: (typeof clientTypes)[number];
+    type: clientTypesEnum;
 }

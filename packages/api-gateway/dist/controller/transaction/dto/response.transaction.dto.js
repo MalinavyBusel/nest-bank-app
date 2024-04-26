@@ -8,24 +8,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResponseClientDto = void 0;
-const common_model_1 = require("common-model");
+exports.ResponseTransactionDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
-class ResponseClientDto {
+class ResponseTransactionDto {
 }
-exports.ResponseClientDto = ResponseClientDto;
+exports.ResponseTransactionDto = ResponseTransactionDto;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
-], ResponseClientDto.prototype, "id", void 0);
+], ResponseTransactionDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ResponseTransactionDto.prototype, "amount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], ResponseTransactionDto.prototype, "datetime", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
-], ResponseClientDto.prototype, "name", void 0);
+], ResponseTransactionDto.prototype, "from", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", typeof (_a = typeof common_model_1.clientTypesEnum !== "undefined" && common_model_1.clientTypesEnum) === "function" ? _a : Object)
-], ResponseClientDto.prototype, "type", void 0);
-//# sourceMappingURL=response.client.dto.js.map
+    __metadata("design:type", String)
+], ResponseTransactionDto.prototype, "to", void 0);
+//# sourceMappingURL=response.transaction.dto.js.map

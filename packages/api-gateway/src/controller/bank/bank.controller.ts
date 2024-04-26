@@ -33,7 +33,9 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  getById(@Param('id') _id: string) {}
+  getById(@Param('id') id: string) {
+    return this.tcpBankService.send({ cmd: 'get-bank' }, id);
+  }
 
   @Post('search')
   @ApiOperation({
@@ -42,7 +44,7 @@ export class BankController {
   })
   @ApiOkResponse({ type: [ResponseBankDto] })
   find() {
-    return this.tcpBankService.send({ cmd: 'find-bank' }, '');
+    return this.tcpBankService.send({ cmd: 'find-banks' }, '');
   }
 
   @Post('create')
@@ -51,7 +53,9 @@ export class BankController {
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  new(@Body() _createBankDto: CreateBankDto) {}
+  create(@Body() createBankDto: CreateBankDto) {
+    return this.tcpBankService.send({ cmd: 'create-bank' }, createBankDto);
+  }
 
   @Patch(':id')
   @ApiOperation({
@@ -63,7 +67,12 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiBody({ type: UpdateBankDto })
-  update(@Param('id') _id: string, @Body() _updateBankDto: UpdateBankDto) {}
+  update(@Param('id') id: string, @Body() updateBankDto: UpdateBankDto) {
+    return this.tcpBankService.send({ cmd: 'update-bank' }, [
+      id,
+      updateBankDto,
+    ]);
+  }
 
   @Delete(':id')
   @ApiOperation({
@@ -74,5 +83,7 @@ export class BankController {
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
-  delete(@Param('id') _id: string) {}
+  delete(@Param('id') id: string) {
+    return this.tcpBankService.send({ cmd: 'delete-bank' }, id);
+  }
 }

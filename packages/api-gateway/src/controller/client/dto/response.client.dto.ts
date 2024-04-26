@@ -1,7 +1,7 @@
-import { Client, clientTypesEnum, WithId } from 'common-model';
+import { Client, clientTypesEnum } from 'common-model';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ResponseClientDto implements Client, WithId {
+export class ResponseClientDto implements Client {
   @ApiProperty({ description: 'UUID string of the record' })
   id: string;
 

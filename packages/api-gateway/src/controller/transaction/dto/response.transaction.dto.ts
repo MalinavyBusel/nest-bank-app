@@ -1,7 +1,7 @@
-import { Transaction, WithId } from 'common-model';
+import { Transaction } from 'common-model';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ResponseTransactionDto implements Transaction, WithId {
+export class ResponseTransactionDto implements Transaction {
   @ApiProperty({ description: 'UUID string of the record' })
   id: string;
 

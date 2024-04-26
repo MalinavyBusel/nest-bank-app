@@ -1,7 +1,7 @@
-import { Account, WithId, currencyTypesEnum } from 'common-model';
+import { Account, currencyTypesEnum } from 'common-model';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ResponseAccountDto implements Account, WithId {
+export class ResponseAccountDto implements Account {
   @ApiProperty({
     description: 'UUID string of the record',
   })

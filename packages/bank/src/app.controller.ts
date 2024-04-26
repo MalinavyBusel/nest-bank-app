@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Bank, WithId } from 'common-model';
+import { Bank } from 'common-model';
 import { MessagePattern } from '@nestjs/microservices';
 
 @Controller()
@@ -8,22 +8,22 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get-bank' })
-  async getById(id: string): Promise<Bank & WithId> {
+  async getById(id: string): Promise<Bank> {
     return await this.appService.getById(id);
   }
 
   @MessagePattern({ cmd: 'create-bank' })
-  async create(data: Bank): Promise<string> {
+  async create(data: Omit<Bank, 'id'>): Promise<string> {
     return await this.appService.create(data);
   }
 
   @MessagePattern({ cmd: 'find-banks' })
-  async find(filter: any): Promise<(Bank & WithId)[]> {
+  async find(filter: any): Promise<Bank[]> {
     return await this.appService.find(filter);
   }
 
   @MessagePattern({ cmd: 'update-bank' })
-  async update(data: [string, Partial<Bank>]): Promise<number> {
+  async update(data: [string, Partial<Omit<Bank, 'id'>>]): Promise<number> {
     return await this.appService.update(data);
   }
 

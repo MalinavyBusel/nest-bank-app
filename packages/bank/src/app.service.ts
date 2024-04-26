@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Bank, WithId } from 'common-model';
+import { Bank } from 'common-model';
 import { Bank as BankEntity } from './entities/bank.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,15 +11,15 @@ export class AppService {
     private readonly bankRepository: Repository<BankEntity>,
   ) {}
 
-  async getById(id: string): Promise<(Bank & WithId) | null> {
+  async getById(id: string): Promise<Bank | null> {
     return this.bankRepository.findOneBy({ id });
   }
 
-  async find(_filter: any): Promise<(Bank & WithId)[]> {
+  async find(_filter: any): Promise<Bank[]> {
     return this.bankRepository.find();
   }
 
-  async create(data: Bank): Promise<string> {
+  async create(data: Omit<Bank, 'id'>): Promise<string> {
     const insertResult = await this.bankRepository
       .createQueryBuilder()
       .insert()
@@ -29,7 +29,7 @@ export class AppService {
     return insertResult.raw[0]['id'];
   }
 
-  async update(data: [string, Partial<Bank>]): Promise<number> {
+  async update(data: [string, Partial<Omit<Bank, 'id'>>]): Promise<number> {
     const [id, updateDto] = data;
     const updateResult = await this.bankRepository.update({ id }, updateDto);
     return updateResult.affected;

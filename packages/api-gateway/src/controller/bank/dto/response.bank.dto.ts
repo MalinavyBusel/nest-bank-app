@@ -1,7 +1,7 @@
-import { Bank, WithId } from 'common-model';
+import { Bank } from 'common-model';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ResponseBankDto implements Bank, WithId {
+export class ResponseBankDto implements Bank {
   @ApiProperty({ description: 'UUID string of the record' })
   id: string;
 

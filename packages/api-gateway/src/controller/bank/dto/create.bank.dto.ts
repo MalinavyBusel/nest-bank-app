@@ -2,7 +2,7 @@ import { IsAlpha, Max, Min } from 'class-validator';
 import { Bank } from 'common-model';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBankDto implements Bank {
+export class CreateBankDto implements Omit<Bank, 'id'> {
   @ApiProperty({
     description:
       'the comission percent for transactions where entity client sends money to another bank account',

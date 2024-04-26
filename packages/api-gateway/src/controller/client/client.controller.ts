@@ -13,8 +13,9 @@ import { ResponseAccountDto } from '../account/dto';
 @ApiTags('Client API')
 @Controller('client')
 export class ClientController {
+  @Get(':id')
   @ApiOperation({
-    summary: 'Returns client',
+    summary: 'Get client by id',
     description: 'Returns client with the same UUID',
   })
   @ApiParam({
@@ -22,9 +23,9 @@ export class ClientController {
     description: 'the string representation of the target client UUID',
   })
   @ApiOkResponse({ type: ResponseClientDto })
-  @Get(':id')
   getById(@Param('id') _id: string) {}
 
+  @Get(':id/transactions')
   @ApiOperation({
     summary: 'Returns all clients transactions',
     description:
@@ -35,9 +36,9 @@ export class ClientController {
     description: 'the string representation of the target client UUID',
   })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
-  @Get(':id/transactions')
   getTransactions(@Param('id') _id: string) {}
 
+  @Get(':id/accounts')
   @ApiOperation({
     summary: 'Returns all clients accounts',
     description: 'Returns all accounts owned by client with provided UUID',
@@ -47,33 +48,32 @@ export class ClientController {
     description: 'the string representation of the target client UUID',
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
-  @Get(':id/accounts')
   getAccounts(@Param('id') _id: string) {}
 
+  @Post('search')
   @ApiOperation({
     summary: 'Returns all clients filtered by condition',
     description: 'Returns all clients filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseClientDto] })
-  @Post('search')
   find() {}
 
+  @Post('create')
   @ApiOperation({
     summary: 'Creates new client',
     description: 'Creates new client and an initial account for it',
   })
   @ApiBody({ type: CreateClientDto })
-  @Post('create')
   new(@Body() _createClientDto: CreateClientDto) {}
 
+  @Delete(':id')
   @ApiOperation({
-    summary: 'Deletes a client',
+    summary: 'Deletes a client by id',
     description: 'Deletes a client with the same UUID and all its accounts',
   })
   @ApiParam({
     name: 'id',
     description: 'the string representation of the target client UUID',
   })
-  @Delete(':id')
   delete(@Param('id') _id: string) {}
 }

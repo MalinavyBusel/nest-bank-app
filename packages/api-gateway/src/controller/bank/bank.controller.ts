@@ -23,8 +23,9 @@ import { ClientProxy } from '@nestjs/microservices';
 export class BankController {
   constructor(@Inject('BANKS') private readonly tcpBankService: ClientProxy) {}
 
+  @Get(':id')
   @ApiOperation({
-    summary: 'Returns bank',
+    summary: 'Get bank by id',
     description: 'Returns bank with the same UUID',
   })
   @ApiParam({
@@ -32,47 +33,46 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  @Get(':id')
   getById(@Param('id') _id: string) {}
 
+  @Post('search')
   @ApiOperation({
     summary: 'Returns all banks filtered by condition',
     description: 'Returns all banks filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseBankDto] })
-  @Post('search')
   find() {
     return this.tcpBankService.send({ cmd: 'find-bank' }, '');
   }
 
+  @Post('create')
   @ApiOperation({
     summary: 'Creates new bank',
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  @Post('create')
   new(@Body() _createBankDto: CreateBankDto) {}
 
+  @Patch(':id')
   @ApiOperation({
-    summary: 'updates a bank',
-    description: 'updates a bank with the same UUID',
+    summary: 'Updates a bank by id',
+    description: 'Updates a bank with the same UUID',
   })
   @ApiParam({
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
   @ApiBody({ type: UpdateBankDto })
-  @Patch(':id')
   update(@Param('id') _id: string, @Body() _updateBankDto: UpdateBankDto) {}
 
+  @Delete(':id')
   @ApiOperation({
-    summary: 'Deletes a bank',
+    summary: 'Deletes a bank by id',
     description: 'Deletes a bank with the same UUID and all its accounts',
   })
   @ApiParam({
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
-  @Delete(':id')
   delete(@Param('id') _id: string) {}
 }

@@ -12,7 +12,7 @@ import {
 @Controller('transaction')
 export class TransactionController {
   @ApiOperation({
-    summary: 'Returns transaction object',
+    summary: 'Returns transaction',
     description: 'Returns transaction with the same UUID',
   })
   @ApiParam({
@@ -36,6 +36,6 @@ export class TransactionController {
     description: 'Creates new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  @Post('')
+  @Post('create')
   new(@Body() _createTransactionDto: CreateTransactionDto) {}
 }

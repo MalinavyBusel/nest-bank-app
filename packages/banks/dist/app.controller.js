@@ -12,21 +12,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
+const microservices_1 = require("@nestjs/microservices");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
     }
-    getHello() {
-        return this.appService.getHello();
+    async getById(id) {
+        return await this.appService.getById(id);
+    }
+    async find(filter) {
+        return await this.appService.find(filter);
+    }
+    async delete(id) {
+        return await this.appService.delete(id);
     }
 };
 exports.AppController = AppController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'get-bank' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "getHello", null);
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getById", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find-banks' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "find", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete-bank' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "delete", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

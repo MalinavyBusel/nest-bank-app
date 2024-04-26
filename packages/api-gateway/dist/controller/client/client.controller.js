@@ -16,6 +16,8 @@ exports.ClientController = void 0;
 const common_1 = require("@nestjs/common");
 const dto_1 = require("./dto");
 const swagger_1 = require("@nestjs/swagger");
+const dto_2 = require("../transaction/dto");
+const dto_3 = require("../account/dto");
 let ClientController = class ClientController {
     getById(_id) { }
     getTransactions(_id) { }
@@ -27,13 +29,14 @@ let ClientController = class ClientController {
 exports.ClientController = ClientController;
 __decorate([
     (0, swagger_1.ApiOperation)({
-        summary: 'Returns client object',
+        summary: 'Returns client',
         description: 'Returns client with the same UUID',
     }),
     (0, swagger_1.ApiParam)({
         name: 'id',
         description: 'the string representation of the target client UUID',
     }),
+    (0, swagger_1.ApiOkResponse)({ type: dto_1.ResponseClientDto }),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -49,6 +52,7 @@ __decorate([
         name: 'id',
         description: 'the string representation of the target client UUID',
     }),
+    (0, swagger_1.ApiOkResponse)({ type: [dto_2.ResponseTransactionDto] }),
     (0, common_1.Get)(':id/transactions'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -64,6 +68,7 @@ __decorate([
         name: 'id',
         description: 'the string representation of the target client UUID',
     }),
+    (0, swagger_1.ApiOkResponse)({ type: [dto_3.ResponseAccountDto] }),
     (0, common_1.Get)(':id/accounts'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -71,6 +76,11 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClientController.prototype, "getAccounts", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({
+        summary: 'Returns all clients filtered by condition',
+        description: 'Returns all clients filtered by condition',
+    }),
+    (0, swagger_1.ApiOkResponse)({ type: [dto_1.ResponseClientDto] }),
     (0, common_1.Post)('search'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -82,7 +92,7 @@ __decorate([
         description: 'Creates new client and an initial account for it',
     }),
     (0, swagger_1.ApiBody)({ type: dto_1.CreateClientDto }),
-    (0, common_1.Post)(''),
+    (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.CreateClientDto]),

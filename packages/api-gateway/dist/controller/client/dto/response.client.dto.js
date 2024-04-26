@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResponseClientDto = void 0;
+const common_model_1 = require("common-model");
 const swagger_1 = require("@nestjs/swagger");
 class ResponseClientDto {
 }
@@ -24,6 +25,6 @@ __decorate([
 ], ResponseClientDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], ResponseClientDto.prototype, "type", void 0);
 //# sourceMappingURL=response.client.dto.js.map

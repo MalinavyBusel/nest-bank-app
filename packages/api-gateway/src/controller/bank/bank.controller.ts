@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -15,12 +16,15 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { ClientProxy } from '@nestjs/microservices';
 
 @ApiTags('Bank API')
 @Controller('bank')
 export class BankController {
+  constructor(@Inject('BANKS') private readonly tcpBankService: ClientProxy) {}
+
   @ApiOperation({
-    summary: 'Returns bank object',
+    summary: 'Returns bank',
     description: 'Returns bank with the same UUID',
   })
   @ApiParam({
@@ -37,14 +41,16 @@ export class BankController {
   })
   @ApiOkResponse({ type: [ResponseBankDto] })
   @Post('search')
-  find() {}
+  find() {
+    return this.tcpBankService.send({ cmd: 'find-banks' }, '');
+  }
 
   @ApiOperation({
     summary: 'Creates new bank',
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  @Post('')
+  @Post('create')
   new(@Body() _createBankDto: CreateBankDto) {}
 
   @ApiOperation({

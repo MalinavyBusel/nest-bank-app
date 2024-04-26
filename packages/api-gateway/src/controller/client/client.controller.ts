@@ -14,7 +14,7 @@ import { ResponseAccountDto } from '../account/dto';
 @Controller('client')
 export class ClientController {
   @ApiOperation({
-    summary: 'Returns client object',
+    summary: 'Returns client',
     description: 'Returns client with the same UUID',
   })
   @ApiParam({
@@ -63,7 +63,7 @@ export class ClientController {
     description: 'Creates new client and an initial account for it',
   })
   @ApiBody({ type: CreateClientDto })
-  @Post('')
+  @Post('create')
   new(@Body() _createClientDto: CreateClientDto) {}
 
   @ApiOperation({

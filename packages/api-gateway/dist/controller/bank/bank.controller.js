@@ -16,9 +16,15 @@ exports.BankController = void 0;
 const common_1 = require("@nestjs/common");
 const dto_1 = require("./dto");
 const swagger_1 = require("@nestjs/swagger");
+const microservices_1 = require("@nestjs/microservices");
 let BankController = class BankController {
+    constructor(tcpBankService) {
+        this.tcpBankService = tcpBankService;
+    }
     getById(_id) { }
-    find() { }
+    find() {
+        return this.tcpBankService.send({ cmd: 'find-banks' }, '');
+    }
     new(_createBankDto) { }
     update(_id, _updateBankDto) { }
     delete(_id) { }
@@ -26,7 +32,7 @@ let BankController = class BankController {
 exports.BankController = BankController;
 __decorate([
     (0, swagger_1.ApiOperation)({
-        summary: 'Returns bank object',
+        summary: 'Returns bank',
         description: 'Returns bank with the same UUID',
     }),
     (0, swagger_1.ApiParam)({
@@ -57,7 +63,7 @@ __decorate([
         description: 'Creates new bank',
     }),
     (0, swagger_1.ApiBody)({ type: dto_1.CreateBankDto }),
-    (0, common_1.Post)(''),
+    (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.CreateBankDto]),
@@ -97,6 +103,8 @@ __decorate([
 ], BankController.prototype, "delete", null);
 exports.BankController = BankController = __decorate([
     (0, swagger_1.ApiTags)('Bank API'),
-    (0, common_1.Controller)('bank')
+    (0, common_1.Controller)('bank'),
+    __param(0, (0, common_1.Inject)('BANKS')),
+    __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], BankController);
 //# sourceMappingURL=bank.controller.js.map

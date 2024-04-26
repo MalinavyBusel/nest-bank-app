@@ -12,11 +12,21 @@ const bank_controller_1 = require("./bank/bank.controller");
 const client_controller_1 = require("./client/client.controller");
 const account_controller_1 = require("./account/account.controller");
 const transaction_controller_1 = require("./transaction/transaction.controller");
+const microservices_1 = require("@nestjs/microservices");
 let ControllerModule = class ControllerModule {
 };
 exports.ControllerModule = ControllerModule;
 exports.ControllerModule = ControllerModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'BANKS',
+                    transport: microservices_1.Transport.TCP,
+                    options: { host: 'localhost', port: 3001 },
+                },
+            ]),
+        ],
         controllers: [
             bank_controller_1.BankController,
             client_controller_1.ClientController,

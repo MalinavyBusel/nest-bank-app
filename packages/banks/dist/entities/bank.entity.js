@@ -9,25 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateClientDto = void 0;
-const common_model_1 = require("common-model");
-const class_validator_1 = require("class-validator");
-const swagger_1 = require("@nestjs/swagger");
-class CreateClientDto {
-}
-exports.CreateClientDto = CreateClientDto;
+exports.Bank = void 0;
+const typeorm_1 = require("typeorm");
+let Bank = class Bank {
+};
+exports.Bank = Bank;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'the name of the client',
-    }),
-    (0, class_validator_1.IsAlpha)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
-], CreateClientDto.prototype, "name", void 0);
+], Bank.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'type of the client - entity of individual',
-    }),
-    (0, class_validator_1.IsEnum)(common_model_1.clientTypesEnum),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], CreateClientDto.prototype, "type", void 0);
-//# sourceMappingURL=create.client.dto.js.map
+], Bank.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Bank.prototype, "entityComission", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Bank.prototype, "individualComission", void 0);
+exports.Bank = Bank = __decorate([
+    (0, typeorm_1.Entity)('bank')
+], Bank);
+//# sourceMappingURL=bank.entity.js.map

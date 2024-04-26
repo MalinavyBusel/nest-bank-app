@@ -26,7 +26,7 @@ let AccountController = class AccountController {
 exports.AccountController = AccountController;
 __decorate([
     (0, swagger_1.ApiOperation)({
-        summary: 'Returns account object',
+        summary: 'Returns account',
         description: 'Returns account with the same UUID',
     }),
     (0, swagger_1.ApiParam)({
@@ -58,7 +58,7 @@ __decorate([
     }),
     (0, swagger_1.ApiBody)({ type: dto_1.CreateAccountDto }),
     (0, swagger_1.ApiOkResponse)({ type: String }),
-    (0, common_1.Post)(''),
+    (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.CreateAccountDto]),
@@ -66,8 +66,8 @@ __decorate([
 ], AccountController.prototype, "new", null);
 __decorate([
     (0, swagger_1.ApiOperation)({
-        summary: 'updates an account',
-        description: 'updates an account with the same UUID',
+        summary: 'Updates an account',
+        description: 'Updates an account with the same UUID',
     }),
     (0, swagger_1.ApiParam)({
         name: 'id',

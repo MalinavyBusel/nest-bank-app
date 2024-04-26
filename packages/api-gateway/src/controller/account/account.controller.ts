@@ -20,7 +20,7 @@ import {
 @Controller('account')
 export class AccountController {
   @ApiOperation({
-    summary: 'Returns account object',
+    summary: 'Returns account',
     description: 'Returns account with the same UUID',
   })
   @ApiParam({
@@ -45,12 +45,12 @@ export class AccountController {
   })
   @ApiBody({ type: CreateAccountDto })
   @ApiOkResponse({ type: String })
-  @Post('')
+  @Post('create')
   new(@Body() _createAccountDto: CreateAccountDto) {}
 
   @ApiOperation({
-    summary: 'updates an account',
-    description: 'updates an account with the same UUID',
+    summary: 'Updates an account',
+    description: 'Updates an account with the same UUID',
   })
   @ApiParam({
     name: 'id',

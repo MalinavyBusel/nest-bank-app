@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateClientDto = void 0;
 const common_model_1 = require("common-model");
@@ -28,6 +29,6 @@ __decorate([
         description: 'type of the client - entity of individual',
     }),
     (0, class_validator_1.IsEnum)(common_model_1.clientTypesEnum),
-    __metadata("design:type", String)
+    __metadata("design:type", typeof (_a = typeof common_model_1.clientTypesEnum !== "undefined" && common_model_1.clientTypesEnum) === "function" ? _a : Object)
 ], CreateClientDto.prototype, "type", void 0);
 //# sourceMappingURL=create.client.dto.js.map

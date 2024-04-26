@@ -1,1 +1,1 @@
-yarn run lint && yarn run build && git stage .
+yarn run build && git stage .

@@ -35,8 +35,8 @@ export class AppService {
     return updateResult.affected;
   }
 
-  async delete(id: string): Promise<number | null> {
+  async delete(id: string): Promise<number> {
     const deleteResult = await this.bankRepository.delete({ id });
-    return deleteResult.affected;
+    return deleteResult.affected ?? 0;
   }
 }

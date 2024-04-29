@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -33,7 +34,7 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  getById(@Param('id') id: string) {
+  getById(@Param('id', ParseUUIDPipe) id: string) {
     return this.tcpBankService.send({ cmd: 'get-bank' }, id);
   }
 
@@ -67,7 +68,10 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiBody({ type: UpdateBankDto })
-  update(@Param('id') id: string, @Body() updateBankDto: UpdateBankDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateBankDto: UpdateBankDto,
+  ) {
     return this.tcpBankService.send({ cmd: 'update-bank' }, [
       id,
       updateBankDto,
@@ -83,7 +87,7 @@ export class BankController {
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
-  delete(@Param('id') id: string) {
+  delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.tcpBankService.send({ cmd: 'delete-bank' }, id);
   }
 }

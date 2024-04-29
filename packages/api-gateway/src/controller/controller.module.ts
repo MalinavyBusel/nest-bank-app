@@ -9,9 +9,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   imports: [
     ClientsModule.register([
       {
-        name: 'BANKS',
+        name: 'BANK',
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3001 },
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: 'CLIENT',
+        transport: Transport.TCP,
+        options: { host: 'localhost', port: 3002 },
       },
     ]),
   ],

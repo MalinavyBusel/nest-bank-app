@@ -20,6 +20,8 @@
     "start:api-gateway:debug": "yarn workspace api-gateway start:debug",
     "start:bank:dev": "yarn workspace bank start:dev",
     "start:bank:debug": "yarn workspace bank start:debug",
+    "start:client:dev": "yarn workspace client start:dev",
+    "start:client:debug": "yarn workspace client start:debug",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -89,6 +91,7 @@
   "workspaces": [
     "packages/common-model",
     "packages/api-gateway",
-    "packages/bank"
+    "packages/bank",
+    "packages/client"
   ]
 }

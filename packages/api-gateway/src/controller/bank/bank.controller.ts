@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateBankDto, ResponseBankDto, UpdateBankDto } from './dto';
 import {
@@ -22,7 +23,7 @@ import { ClientProxy } from '@nestjs/microservices';
 @ApiTags('Bank API')
 @Controller('bank')
 export class BankController {
-  constructor(@Inject('BANKS') private readonly tcpBankService: ClientProxy) {}
+  constructor(@Inject('BANK') private readonly tcpBankService: ClientProxy) {}
 
   @Get(':id')
   @ApiOperation({
@@ -54,7 +55,7 @@ export class BankController {
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  create(@Body() createBankDto: CreateBankDto) {
+  create(@Body(ValidationPipe) createBankDto: CreateBankDto) {
     return this.tcpBankService.send({ cmd: 'create-bank' }, createBankDto);
   }
 
@@ -70,7 +71,7 @@ export class BankController {
   @ApiBody({ type: UpdateBankDto })
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateBankDto: UpdateBankDto,
+    @Body(ValidationPipe) updateBankDto: UpdateBankDto,
   ) {
     return this.tcpBankService.send({ cmd: 'update-bank' }, [
       id,

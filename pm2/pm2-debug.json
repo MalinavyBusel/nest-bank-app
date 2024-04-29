@@ -7,6 +7,10 @@
     {
       "name": "bank",
       "script": "yarn start:bank:debug"
+    },
+    {
+      "name": "client",
+      "script": "yarn start:client:debug"
     }
   ]
 }

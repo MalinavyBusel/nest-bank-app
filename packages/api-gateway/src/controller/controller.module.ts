@@ -23,6 +23,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3003 },
       },
+      {
+        name: 'TRANSACTION',
+        options: { host: 'localhost', port: 3004 },
+      },
     ]),
   ],
   controllers: [

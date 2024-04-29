@@ -12,8 +12,8 @@ export class ResponseTransactionDto implements Transaction {
   datetime: Date;
 
   @ApiProperty({ description: 'UUID string of the sender account' })
-  from: string;
+  fromId: string;
 
   @ApiProperty({ description: 'UUID string of the receiver account' })
-  to: string;
+  toId: string;
 }

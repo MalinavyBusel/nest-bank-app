@@ -3,6 +3,10 @@
     {
       "name": "api-gateway",
       "script": "yarn start:api-gateway:debug"
+    },
+    {
+      "name": "bank",
+      "script": "yarn start:bank:debug"
     }
   ]
 }

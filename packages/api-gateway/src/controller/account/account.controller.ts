@@ -19,8 +19,9 @@ import {
 @ApiTags('Account API')
 @Controller('account')
 export class AccountController {
+  @Get(':id')
   @ApiOperation({
-    summary: 'Returns account object',
+    summary: 'Get account by id',
     description: 'Returns account with the same UUID',
   })
   @ApiParam({
@@ -28,49 +29,48 @@ export class AccountController {
     description: 'the string representation of the target account UUID',
   })
   @ApiOkResponse({ type: ResponseAccountDto })
-  @Get(':id')
   getById(@Param('id') _id: string) {}
 
+  @Post('search')
   @ApiOperation({
     summary: 'Returns all accounts filtered by condition',
     description: 'Returns all accounts filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
-  @Post('search')
   find() {}
 
+  @Post('create')
   @ApiOperation({
     summary: 'Creates new account',
     description: 'Creates new account and returns its id',
   })
   @ApiBody({ type: CreateAccountDto })
   @ApiOkResponse({ type: String })
-  @Post('')
   new(@Body() _createAccountDto: CreateAccountDto) {}
 
+  @Patch(':id')
   @ApiOperation({
-    summary: 'updates an account',
-    description: 'updates an account with the same UUID',
+    summary: 'Updates an account by id',
+    description: 'Updates an account with the same UUID',
   })
   @ApiParam({
     name: 'id',
     description: 'the string representation of the target account UUID',
   })
   @ApiBody({ type: UpdateAccountDto })
-  @Patch(':id')
   update(
     @Param('id') _id: string,
     @Body() _updateAccountDto: UpdateAccountDto,
   ) {}
 
+  @Delete(':id')
   @ApiOperation({
-    summary: 'Deletes an account',
+    summary: 'Deletes an account by id',
     description: 'Deletes an account with the same UUID',
   })
   @ApiParam({
     name: 'id',
     description: 'the string representation of the target account UUID',
   })
-  @Delete(':id')
   delete(@Param('id') _id: string) {}
 }

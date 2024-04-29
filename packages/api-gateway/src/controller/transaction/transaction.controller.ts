@@ -11,8 +11,9 @@ import {
 @ApiTags('Transaction API')
 @Controller('transaction')
 export class TransactionController {
+  @Get(':id')
   @ApiOperation({
-    summary: 'Returns transaction object',
+    summary: 'Get transaction by id',
     description: 'Returns transaction with the same UUID',
   })
   @ApiParam({
@@ -20,22 +21,21 @@ export class TransactionController {
     description: 'the string representation of the target transaction UUID',
   })
   @ApiOkResponse({ type: ResponseTransactionDto })
-  @Get(':id')
   getById(@Param('id') _id: string) {}
 
+  @Post('search')
   @ApiOperation({
     summary: 'Returns all transactions  filtered by condition',
     description: 'Returns all transactions filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
-  @Post('search')
   find() {}
 
+  @Post('create')
   @ApiOperation({
-    summary: 'Creates new transaction',
-    description: 'Creates new transaction',
+    summary: 'Creates a new transaction',
+    description: 'Creates a new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  @Post('')
   new(@Body() _createTransactionDto: CreateTransactionDto) {}
 }

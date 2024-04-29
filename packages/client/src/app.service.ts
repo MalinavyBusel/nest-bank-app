@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Client as ClientEntity } from './entities/client.entity';
 import { Repository } from 'typeorm';
-import { Client } from 'common-model';
+import { Client, ClientEntity } from 'common-model';
 
 @Injectable()
 export class AppService {

@@ -11,6 +11,10 @@
     {
       "name": "client",
       "script": "yarn start:client:debug"
+    },
+    {
+      "name": "account",
+      "script": "yarn start:account:dev"
     }
   ]
 }

@@ -13,12 +13,15 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3001 },
       },
-    ]),
-    ClientsModule.register([
       {
         name: 'CLIENT',
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3002 },
+      },
+      {
+        name: 'ACCOUNT',
+        transport: Transport.TCP,
+        options: { host: 'localhost', port: 3003 },
       },
     ]),
   ],

@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Account, Client, Transaction } from 'common-model';
+import { Client } from 'common-model';
 import { MessagePattern } from '@nestjs/microservices';
 
 @Controller()

@@ -31,4 +31,9 @@ export class AppController {
   async delete(id: string): Promise<number> {
     return await this.appService.delete(id);
   }
+
+  @MessagePattern({ cmd: 'get-client-accounts' })
+  async getClientAccounts(id: string): Promise<Account[]> {
+    return this.appService.getClientAccounts(id);
+  }
 }

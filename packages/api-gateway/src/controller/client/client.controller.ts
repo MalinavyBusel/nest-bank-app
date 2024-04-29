@@ -26,6 +26,7 @@ import { ClientProxy } from '@nestjs/microservices';
 export class ClientController {
   constructor(
     @Inject('CLIENT') private readonly tcpClientService: ClientProxy,
+    @Inject('ACCOUNT') private readonly tcpAccountService: ClientProxy,
   ) {}
 
   @Get(':id')
@@ -65,7 +66,9 @@ export class ClientController {
     description: 'the string representation of the target client UUID',
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
-  getAccounts(@Param('id', ParseUUIDPipe) _id: string) {}
+  getAccounts(@Param('id', ParseUUIDPipe) id: string) {
+    return this.tcpAccountService.send({ cmd: 'get-client-accounts' }, id);
+  }
 
   @Post('search')
   @ApiOperation({

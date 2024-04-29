@@ -38,4 +38,8 @@ export class AppService {
     const deleteResult = await this.accountRepository.delete({ id });
     return deleteResult.affected ?? 0;
   }
+
+  getClientAccounts(id: string) {
+    return this.accountRepository.findBy({ clientId: id });
+  }
 }

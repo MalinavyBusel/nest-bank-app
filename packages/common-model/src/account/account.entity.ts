@@ -17,7 +17,7 @@ export class AccountEntity {
   @Column({ type: 'enum', enum: currencyTypesEnum })
   public currency: currencyTypesEnum;
 
-  @Column()
+  @Column({ type: 'double precision' })
   public amount: number;
 
   @ManyToOne(() => ClientEntity, (client) => client.accounts)

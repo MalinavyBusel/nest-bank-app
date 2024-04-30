@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { AccountEntity } from '../account';
 
@@ -12,10 +13,10 @@ export class TransactionEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz' })
   public datetime: Date;
 
-  @Column()
+  @Column({ type: 'double precision' })
   public amount: number;
 
   @ManyToOne(() => AccountEntity)

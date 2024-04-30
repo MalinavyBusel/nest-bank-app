@@ -2,9 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
+import {
+  AccountEntity,
+  BankEntity,
+  ClientEntity,
+  TransactionEntity,
+} from 'common-model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TransactionEntity } from 'common-model/dist/transaction/transaction.entity';
 
 @Module({
   imports: [
@@ -23,7 +27,12 @@ import { TransactionEntity } from 'common-model/dist/transaction/transaction.ent
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([TransactionEntity]),
+    TypeOrmModule.forFeature([
+      TransactionEntity,
+      AccountEntity,
+      BankEntity,
+      ClientEntity,
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService],

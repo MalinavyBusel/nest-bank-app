@@ -10,12 +10,14 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
 import { LoginDto } from './dto';
 import { firstValueFrom } from 'rxjs';
+import { Public } from '../auth.guard';
 
 @ApiTags('Auth API')
 @Controller('auth')
 export class AuthController {
   constructor(@Inject('AUTH') private readonly tcpAuthService: ClientProxy) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({
     description: 'Returns jwt token',

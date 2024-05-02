@@ -19,13 +19,9 @@ export class AppService {
   }
 
   async create(data: Omit<Client, 'id'>): Promise<string> {
-    const insertResult = await this.clientRepository
-      .createQueryBuilder()
-      .insert()
-      .values(data)
-      .returning('id')
-      .execute();
-    return insertResult.raw[0]['id'];
+    const instance = this.clientRepository.create(data);
+    const record = await this.clientRepository.save(instance);
+    return record.id;
   }
 
   async delete(id: string): Promise<number> {

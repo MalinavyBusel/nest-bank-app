@@ -4,6 +4,7 @@ import { ClientController } from './client/client.controller';
 import { AccountController } from './account/account.controller';
 import { TransactionController } from './transaction/transaction.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
@@ -23,9 +24,15 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3003 },
       },
+      {
+        name: 'AUTH',
+        transport: Transport.TCP,
+        options: { host: 'localhost', port: 3005 },
+      },
     ]),
   ],
   controllers: [
+    AuthController,
     BankController,
     ClientController,
     AccountController,

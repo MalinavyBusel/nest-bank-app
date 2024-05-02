@@ -20,7 +20,7 @@ export class AccountEntity {
   @Column()
   public amount: number;
 
-  @ManyToOne(() => ClientEntity, (client) => client.accounts)
+  @ManyToOne(() => ClientEntity)
   @JoinColumn({ name: 'clientId' })
   client: ClientEntity;
 

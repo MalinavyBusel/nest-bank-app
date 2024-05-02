@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
 import { clientTypesEnum } from './client.interface';
-import { AccountEntity } from '../account';
+import { hash } from 'bcrypt';
 
 @Entity('client')
 export class ClientEntity {
@@ -13,12 +13,14 @@ export class ClientEntity {
   @Column({ type: 'enum', enum: clientTypesEnum })
   public type: clientTypesEnum;
 
-  @OneToMany(() => AccountEntity, (account) => account.clientId)
-  public accounts: AccountEntity[];
-
   @Column()
   public email: string;
 
   @Column({ select: false })
   public password: string;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await hash(this.password, 10);
+  }
 }

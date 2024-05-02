@@ -10,11 +10,11 @@ export class AppService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
 
-  async getById(id: string): Promise<Client | null> {
+  async getById(id: string): Promise<Omit<Client, 'password'> | null> {
     return this.clientRepository.findOneBy({ id });
   }
 
-  async find(_filter: any): Promise<Client[]> {
+  async find(_filter: any): Promise<Omit<Client, 'password'>[]> {
     return this.clientRepository.find();
   }
 

@@ -1,5 +1,5 @@
 import { Client, clientTypesEnum } from 'common-model';
-import { IsAlpha, IsEnum } from 'class-validator';
+import { IsAlpha, IsEmail, IsEnum, IsStrongPassword } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateClientDto implements Client {
@@ -14,4 +14,12 @@ export class CreateClientDto implements Client {
   })
   @IsEnum(clientTypesEnum)
   type: clientTypesEnum;
+
+  @ApiProperty({ description: 'clients email' })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ description: 'clients password' })
+  @IsStrongPassword()
+  password: string;
 }

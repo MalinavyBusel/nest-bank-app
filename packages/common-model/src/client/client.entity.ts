@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { clientTypesEnum } from './client.interface';
-import { AccountEntity } from '../account/account.entity';
+import { AccountEntity } from '../account';
 
 @Entity('client')
 export class ClientEntity {
@@ -14,5 +14,11 @@ export class ClientEntity {
   public type: clientTypesEnum;
 
   @OneToMany(() => AccountEntity, (account) => account.clientId)
-  accounts: AccountEntity[];
+  public accounts: AccountEntity[];
+
+  @Column()
+  public email: string;
+
+  @Column({ select: false })
+  public password: string;
 }

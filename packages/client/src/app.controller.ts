@@ -8,12 +8,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get-client' })
-  async getById(id: string): Promise<Client> {
+  async getById(id: string): Promise<Omit<Client, 'password'>> {
     return this.appService.getById(id);
   }
 
   @MessagePattern({ cmd: 'find-clients' })
-  async find(filter: any): Promise<Client[]> {
+  async find(filter: any): Promise<Omit<Client, 'password'>[]> {
     return this.appService.find(filter);
   }
 

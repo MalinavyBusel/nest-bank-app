@@ -12,7 +12,8 @@
     "build": "rimraf ./dist && nest build",
     "build:workspace": "yarn workspaces run build",
     "build:common-model": "yarn workspace common-model build",
-    "build:common": "yarn build:common-model",
+    "build:common-rpc": "yarn workspace common-rpc build",
+    "build:common": "yarn build:common-rpc && yarn build:common-model",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:all:dev": "yarn build:common && yarn pm2 start pm2/pm2-dev.json",
@@ -95,6 +96,7 @@
   "workspaces": [
     "packages/auth",
     "packages/common-model",
+    "packages/common-rpc",
     "packages/api-gateway",
     "packages/bank",
     "packages/client",

@@ -1,13 +1,12 @@
 {
-  "name": "bank",
+  "name": "common-rpc",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "engines": {
-    "node": "~20.12.0"
-  },
+  "main": "dist/index.js",
+  "types": "dist/indes.d.ts",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -24,18 +23,13 @@
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
-    "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
-    "@nestjs/typeorm": "^10.0.2",
-    "common-model": "*",
-    "common-rpc": "*",
-    "pg": "^8.11.5",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "common-model": "*",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

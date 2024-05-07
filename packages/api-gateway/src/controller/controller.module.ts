@@ -3,11 +3,16 @@ import { BankController } from './bank/bank.controller';
 import { ClientController } from './client/client.controller';
 import { AccountController } from './account/account.controller';
 import { TransactionController } from './transaction/transaction.controller';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import {
+  ClientProxyFactory,
+  ClientsModule,
+  Transport,
+} from '@nestjs/microservices';
 import { AuthController } from './auth/auth.controller';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
+import { BANK_RPC_PACKAGE_NAME, bankRpcOptions } from 'common-rpc';
 
 const jwtFactory = {
   useFactory: async (configService: ConfigService) => ({
@@ -24,11 +29,6 @@ const jwtFactory = {
   imports: [
     JwtModule.registerAsync(jwtFactory),
     ClientsModule.register([
-      {
-        name: 'BANK',
-        transport: Transport.TCP,
-        options: { host: 'localhost', port: 3001 },
-      },
       {
         name: 'CLIENT',
         transport: Transport.TCP,
@@ -57,6 +57,12 @@ const jwtFactory = {
     {
       provide: 'APP_GUARD',
       useClass: AuthGuard,
+    },
+    {
+      provide: BANK_RPC_PACKAGE_NAME,
+      useFactory: () => {
+        return ClientProxyFactory.create(bankRpcOptions());
+      },
     },
   ],
 })

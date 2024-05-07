@@ -28,9 +28,11 @@ export class AppService {
     return insertResult.raw[0]['id'];
   }
 
-  async update(data: [string, Partial<Omit<Bank, 'id'>>]): Promise<number> {
-    const [id, updateDto] = data;
-    const updateResult = await this.bankRepository.update({ id }, updateDto);
+  async update(data: Bank): Promise<number> {
+    const updateResult = await this.bankRepository.update(
+      { id: data.id },
+      data,
+    );
     return updateResult.affected;
   }
 

@@ -10,7 +10,7 @@ export class UpdateBankDto implements Omit<Bank, 'id'> {
   @Min(0)
   @Max(100)
   @IsOptional()
-  entityComission: number;
+  entityCommission: number;
 
   @ApiPropertyOptional({
     description:
@@ -19,7 +19,7 @@ export class UpdateBankDto implements Omit<Bank, 'id'> {
   @Min(0)
   @Max(100)
   @IsOptional()
-  individualComission: number;
+  individualCommission: number;
 
   @ApiPropertyOptional({ description: 'the name of the bank' })
   @IsAlpha()

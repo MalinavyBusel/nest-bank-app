@@ -18,12 +18,28 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  BANK_RPC_PACKAGE_NAME,
+  BANK_RPC_SERVICE_NAME,
+  BankRpcService,
+} from 'common-rpc';
+import { Bank } from 'common-model';
 
 @ApiTags('Bank API')
 @Controller('bank')
 export class BankController {
-  constructor(@Inject('BANK') private readonly tcpBankService: ClientProxy) {}
+  private bankRpcService: BankRpcService;
+
+  constructor(
+    @Inject(BANK_RPC_PACKAGE_NAME) private readonly client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.bankRpcService = this.client.getService<BankRpcService>(
+      BANK_RPC_SERVICE_NAME,
+    );
+  }
 
   @Get(':id')
   @ApiOperation({
@@ -35,8 +51,8 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  getById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpBankService.send({ cmd: 'get-bank' }, id);
+  getById(@Param('id', ParseUUIDPipe) id: string): { bank: Bank | null } {
+    return this.bankRpcService.get({ id });
   }
 
   @Post('search')
@@ -45,8 +61,8 @@ export class BankController {
     description: 'Returns all banks filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseBankDto] })
-  find() {
-    return this.tcpBankService.send({ cmd: 'find-banks' }, '');
+  find(): { banks: Bank[] } {
+    return this.bankRpcService.find({});
   }
 
   @Post('create')
@@ -55,8 +71,8 @@ export class BankController {
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  create(@Body(ValidationPipe) createBankDto: CreateBankDto) {
-    return this.tcpBankService.send({ cmd: 'create-bank' }, createBankDto);
+  create(@Body(ValidationPipe) createBankDto: CreateBankDto): { id: string } {
+    return this.bankRpcService.create(createBankDto);
   }
 
   @Patch(':id')
@@ -72,11 +88,8 @@ export class BankController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateBankDto: UpdateBankDto,
-  ) {
-    return this.tcpBankService.send({ cmd: 'update-bank' }, [
-      id,
-      updateBankDto,
-    ]);
+  ): { affected: number } {
+    return this.bankRpcService.update({ id, ...updateBankDto });
   }
 
   @Delete(':id')
@@ -88,7 +101,7 @@ export class BankController {
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
-  delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpBankService.send({ cmd: 'delete-bank' }, id);
+  delete(@Param('id', ParseUUIDPipe) id: string): { affected: number } {
+    return this.bankRpcService.delete({ id });
   }
 }

@@ -2,10 +2,10 @@ import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Client } from 'common-model';
 import { GrpcMethod } from '@nestjs/microservices';
-import { CLIENT_RPC_SERVICE_NAME } from 'common-rpc';
+import { CLIENT_RPC_SERVICE_NAME, ClientRpcService } from 'common-rpc';
 
 @Controller()
-export class AppController {
+export class AppController implements ClientRpcService {
   constructor(private readonly appService: AppService) {}
 
   @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'get')

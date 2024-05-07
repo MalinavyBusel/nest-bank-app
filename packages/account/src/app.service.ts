@@ -28,9 +28,14 @@ export class AppService {
     return this.accountRepository.find();
   }
 
-  async update(data: [string, Partial<Omit<Account, 'id'>>]): Promise<number> {
-    const [id, updateDto] = data;
-    const updateResult = await this.accountRepository.update({ id }, updateDto);
+  async update(data: { id: string; amount: number }): Promise<number> {
+    const { id, amount } = data;
+    // TODO
+    // do smth with update logic
+    const updateResult = await this.accountRepository.update(
+      { id },
+      { amount },
+    );
     return updateResult.affected;
   }
 

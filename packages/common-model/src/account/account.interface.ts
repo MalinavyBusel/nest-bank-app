@@ -1,4 +1,5 @@
 export interface Account {
+  id: string;
   clientId: string;
   bankId: string;
   currency: currencyTypesEnum;

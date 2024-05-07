@@ -18,14 +18,28 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  ACCOUNT_RPC_PACKAGE_NAME,
+  ACCOUNT_RPC_SERVICE_NAME,
+  AccountRpcService,
+} from 'common-rpc/dist';
 
 @ApiTags('Account API')
 @Controller('account')
 export class AccountController {
+  private accountRpcService: AccountRpcService;
+
   constructor(
-    @Inject('ACCOUNT') private readonly tcpAccountService: ClientProxy,
+    @Inject(ACCOUNT_RPC_PACKAGE_NAME)
+    private readonly client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.accountRpcService = this.client.getService<AccountRpcService>(
+      ACCOUNT_RPC_SERVICE_NAME,
+    );
+  }
 
   @Get(':id')
   @ApiOperation({
@@ -38,7 +52,7 @@ export class AccountController {
   })
   @ApiOkResponse({ type: ResponseAccountDto })
   getById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpAccountService.send({ cmd: 'get-account' }, id);
+    return this.accountRpcService.get({ id });
   }
 
   @Post('search')
@@ -48,7 +62,7 @@ export class AccountController {
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
   find() {
-    return this.tcpAccountService.send({ cmd: 'find-accounts' }, '');
+    return this.accountRpcService.find({});
   }
 
   @Post('create')
@@ -58,11 +72,8 @@ export class AccountController {
   })
   @ApiBody({ type: CreateAccountDto })
   @ApiOkResponse({ type: String })
-  new(@Body(ValidationPipe) createAccountDto: CreateAccountDto) {
-    return this.tcpAccountService.send(
-      { cmd: 'create-account' },
-      createAccountDto,
-    );
+  create(@Body(ValidationPipe) createAccountDto: CreateAccountDto) {
+    return this.accountRpcService.create(createAccountDto);
   }
 
   @Patch(':id')
@@ -79,10 +90,7 @@ export class AccountController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateAccountDto: UpdateAccountDto,
   ) {
-    return this.tcpAccountService.send({ cmd: 'update-account' }, [
-      id,
-      updateAccountDto,
-    ]);
+    return this.accountRpcService.update({ id, ...updateAccountDto });
   }
 
   @Delete(':id')
@@ -95,6 +103,6 @@ export class AccountController {
     description: 'the string representation of the target account UUID',
   })
   delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpAccountService.send({ cmd: 'delete-account' }, id);
+    return this.accountRpcService.delete({ id });
   }
 }

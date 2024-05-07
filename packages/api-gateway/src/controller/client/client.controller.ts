@@ -19,10 +19,13 @@ import {
 } from '@nestjs/swagger';
 import { ResponseTransactionDto } from '../transaction/dto';
 import { ResponseAccountDto } from '../account/dto';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import {
   CLIENT_RPC_PACKAGE_NAME,
   CLIENT_RPC_SERVICE_NAME,
+  ACCOUNT_RPC_PACKAGE_NAME,
+  ACCOUNT_RPC_SERVICE_NAME,
+  AccountRpcService,
   ClientRpcService,
 } from 'common-rpc';
 
@@ -31,14 +34,20 @@ import {
 export class ClientController {
   private clientRpcService: ClientRpcService;
 
+  private accountRpcService: AccountRpcService;
+
   constructor(
     @Inject(CLIENT_RPC_PACKAGE_NAME) private readonly clientClient: ClientGrpc,
-    @Inject('ACCOUNT') private readonly tcpAccountService: ClientProxy,
+    @Inject(ACCOUNT_RPC_PACKAGE_NAME)
+    private readonly accountClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
     this.clientRpcService = this.clientClient.getService<ClientRpcService>(
       CLIENT_RPC_SERVICE_NAME,
+    );
+    this.accountRpcService = this.accountClient.getService<AccountRpcService>(
+      ACCOUNT_RPC_SERVICE_NAME,
     );
   }
 
@@ -80,7 +89,7 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
   getAccounts(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpAccountService.send({ cmd: 'get-client-accounts' }, id);
+    return this.accountRpcService.getClientAccounts({ id });
   }
 
   @Post('search')

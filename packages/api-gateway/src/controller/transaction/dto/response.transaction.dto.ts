@@ -9,7 +9,7 @@ export class ResponseTransactionDto implements Transaction {
   amount: number;
 
   @ApiProperty({ description: 'date and time when transaction was performed' })
-  datetime: Date;
+  datetime: string;
 
   @ApiProperty({ description: 'UUID string of the sender account' })
   fromId: string;

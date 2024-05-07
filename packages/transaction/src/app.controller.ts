@@ -16,4 +16,11 @@ export class AppController {
   create(data: Omit<Transaction, 'id'>) {
     return this.appService.create(data);
   }
+
+  @MessagePattern({ cmd: 'get-client-transactions' })
+  getClientTransactions(
+    data: [string, { startDate?: string; endDate?: string }],
+  ) {
+    return this.appService.getClientTransactions(data);
+  }
 }

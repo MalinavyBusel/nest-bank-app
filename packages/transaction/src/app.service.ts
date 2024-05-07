@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionEntity,
 } from 'common-model';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, LessThan, MoreThan, And } from 'typeorm';
 import { convertCurrency } from './helpers/currency.converter';
 
 @Injectable()
@@ -27,6 +27,29 @@ export class AppService {
 
   async getById(id: string): Promise<Transaction | null> {
     return this.transactionRepository.findOneBy({ id });
+  }
+
+  async getClientTransactions(
+    data: [string, { startDate?: string; endDate?: string }],
+  ): Promise<Transaction[]> {
+    const [id, dates] = data;
+    let { startDate, endDate } = dates;
+    if (startDate === undefined) {
+      startDate = new Date(0).toISOString();
+    }
+    if (endDate === undefined) {
+      endDate = new Date().toISOString();
+    }
+
+    return await this.transactionRepository
+      .createQueryBuilder('transaction')
+      .leftJoin('transaction.from', 'account')
+      .where('account.clientId = :id', { id })
+      .andWhere('datetime between :startDate and :endDate', {
+        startDate,
+        endDate,
+      })
+      .getMany();
   }
 
   async create(data: Omit<Transaction, 'id'>): Promise<string> {

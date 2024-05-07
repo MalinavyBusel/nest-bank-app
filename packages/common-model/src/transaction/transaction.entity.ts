@@ -14,7 +14,7 @@ export class TransactionEntity {
   public id: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  public datetime: Date;
+  public datetime: string;
 
   @Column({ type: 'double precision' })
   public amount: number;

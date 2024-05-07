@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateClientDto, ResponseClientDto } from './dto';
@@ -15,6 +16,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseTransactionDto } from '../transaction/dto';
@@ -27,6 +29,7 @@ export class ClientController {
   constructor(
     @Inject('CLIENT') private readonly tcpClientService: ClientProxy,
     @Inject('ACCOUNT') private readonly tcpAccountService: ClientProxy,
+    @Inject('TRANSACTION') private readonly tcpTransactionService: ClientProxy,
   ) {}
 
   @Get(':id')
@@ -53,8 +56,27 @@ export class ClientController {
     name: 'id',
     description: 'the string representation of the target client UUID',
   })
+  @ApiQuery({
+    required: false,
+    name: 'startDate',
+    description: 'all returned transactions will be younger than startDate',
+  })
+  @ApiQuery({
+    required: false,
+    name: 'endDate',
+    description: 'all returned transactions will be older than endDate',
+  })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
-  getTransactions(@Param('id', ParseUUIDPipe) _id: string) {}
+  getTransactions(
+    @Param('id', ParseUUIDPipe) _id: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.tcpTransactionService.send({ cmd: 'get-client-transactions' }, [
+      _id,
+      { startDate, endDate },
+    ]);
+  }
 
   @Get(':id/accounts')
   @ApiOperation({

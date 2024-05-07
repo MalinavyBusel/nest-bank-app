@@ -7,6 +7,9 @@
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "types": "dist/indes.d.ts",
+  "engines": {
+    "node": "~20.12.0"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

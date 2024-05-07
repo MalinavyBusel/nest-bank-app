@@ -17,6 +17,8 @@ import {
   bankRpcOptions,
   CLIENT_RPC_PACKAGE_NAME,
   clientRpcOptions,
+  AUTH_RPC_PACKAGE_NAME,
+  authRpcOptions,
 } from 'common-rpc';
 
 const jwtFactory = {
@@ -38,11 +40,6 @@ const jwtFactory = {
         name: 'ACCOUNT',
         transport: Transport.TCP,
         options: { host: 'localhost', port: 3003 },
-      },
-      {
-        name: 'AUTH',
-        transport: Transport.TCP,
-        options: { host: 'localhost', port: 3005 },
       },
     ]),
   ],
@@ -69,6 +66,12 @@ const jwtFactory = {
       provide: CLIENT_RPC_PACKAGE_NAME,
       useFactory: () => {
         return ClientProxyFactory.create(clientRpcOptions());
+      },
+    },
+    {
+      provide: AUTH_RPC_PACKAGE_NAME,
+      useFactory: () => {
+        return ClientProxyFactory.create(authRpcOptions());
       },
     },
   ],

@@ -1,29 +1,38 @@
 import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Client } from 'common-model';
-import { MessagePattern } from '@nestjs/microservices';
+import { GrpcMethod } from '@nestjs/microservices';
+import { CLIENT_RPC_SERVICE_NAME } from 'common-rpc';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern({ cmd: 'get-client' })
-  async getById(id: string): Promise<Omit<Client, 'password'>> {
-    return this.appService.getById(id);
+  @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'get')
+  async getById(clientId: {
+    id: string;
+  }): Promise<{ client: Omit<Client, 'password'> }> {
+    const client = await this.appService.getById(clientId.id);
+    return { client };
   }
 
-  @MessagePattern({ cmd: 'find-clients' })
-  async find(filter: any): Promise<Omit<Client, 'password'>[]> {
-    return this.appService.find(filter);
+  @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'find')
+  async find(
+    filter: Record<string, never>,
+  ): Promise<{ clients: Omit<Client, 'password'>[] }> {
+    const clients = await this.appService.find(filter);
+    return { clients };
   }
 
-  @MessagePattern({ cmd: 'create-client' })
-  async create(data: Omit<Client, 'id'>): Promise<string> {
-    return this.appService.create(data);
+  @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'create')
+  async create(data: Omit<Client, 'id'>): Promise<{ id: string }> {
+    const id = await this.appService.create(data);
+    return { id };
   }
 
-  @MessagePattern({ cmd: 'delete-client' })
-  async delete(id: string): Promise<number> {
-    return this.appService.delete(id);
+  @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'delete')
+  async delete(clientId: { id: string }): Promise<{ affected: number }> {
+    const affected = await this.appService.delete(clientId.id);
+    return { affected };
   }
 }

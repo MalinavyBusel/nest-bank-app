@@ -1,6 +1,10 @@
 {
   "apps": [
     {
+    "name": "auth",
+    "script": "yarn start:auth:dev"
+    },
+    {
       "name": "api-gateway",
       "script": "yarn start:api-gateway:dev"
     },

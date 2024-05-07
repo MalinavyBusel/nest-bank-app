@@ -10,22 +10,18 @@ export class AppService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
 
-  async getById(id: string): Promise<Client | null> {
+  async getById(id: string): Promise<Omit<Client, 'password'> | null> {
     return this.clientRepository.findOneBy({ id });
   }
 
-  async find(_filter: any): Promise<Client[]> {
+  async find(_filter: any): Promise<Omit<Client, 'password'>[]> {
     return this.clientRepository.find();
   }
 
   async create(data: Omit<Client, 'id'>): Promise<string> {
-    const insertResult = await this.clientRepository
-      .createQueryBuilder()
-      .insert()
-      .values(data)
-      .returning('id')
-      .execute();
-    return insertResult.raw[0]['id'];
+    const instance = this.clientRepository.create(data);
+    const record = await this.clientRepository.save(instance);
+    return record.id;
   }
 
   async delete(id: string): Promise<number> {

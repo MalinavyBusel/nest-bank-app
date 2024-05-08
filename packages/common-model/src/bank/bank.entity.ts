@@ -9,8 +9,8 @@ export class BankEntity {
   public name: string;
 
   @Column()
-  public entityComission: number;
+  public entityCommission: number;
 
   @Column()
-  public individualComission: number;
+  public individualCommission: number;
 }

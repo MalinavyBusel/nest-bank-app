@@ -97,9 +97,9 @@ export class AppService {
 
     let comission = 0;
     if (client.type === clientTypesEnum.INDIVIDUAL) {
-      comission = bank.individualComission;
+      comission = bank.individualCommission;
     } else {
-      comission = bank.entityComission;
+      comission = bank.entityCommission;
     }
     return amount * ((100 + comission) / 100);
   }

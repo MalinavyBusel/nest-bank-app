@@ -2,7 +2,7 @@ import { Account, currencyTypesEnum } from 'common-model';
 import { IsEnum, IsUUID, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateAccountDto implements Account {
+export class CreateAccountDto implements Omit<Account, 'id'> {
   @ApiProperty({
     description: 'the initial amount of money after you create the account',
     minimum: 0,

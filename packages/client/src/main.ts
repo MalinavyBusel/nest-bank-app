@@ -1,18 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { clientRpcOptions } from 'common-rpc';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    clientRpcOptions(),
+  );
 
-  await app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
-    options: {
-      host: 'localhost',
-      port: 3002,
-    },
-  });
-
-  app.startAllMicroservices();
+  await app.listen();
 }
 bootstrap();

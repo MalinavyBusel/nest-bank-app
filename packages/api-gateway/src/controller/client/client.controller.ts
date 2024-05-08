@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { ResponseTransactionDto } from '../transaction/dto';
 import { ResponseAccountDto } from '../account/dto';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import {
   CLIENT_RPC_PACKAGE_NAME,
   CLIENT_RPC_SERVICE_NAME,
@@ -29,6 +29,9 @@ import {
   ACCOUNT_RPC_SERVICE_NAME,
   AccountRpcService,
   ClientRpcService,
+  TRANSACTION_RPC_PACKAGE_NAME,
+  TRANSACTION_RPC_SERVICE_NAME,
+  TransactionRpcService,
 } from 'common-rpc';
 
 @ApiTags('Client API')
@@ -38,11 +41,14 @@ export class ClientController {
 
   private accountRpcService: AccountRpcService;
 
+  private transactionRpcService: TransactionRpcService;
+
   constructor(
     @Inject(CLIENT_RPC_PACKAGE_NAME) private readonly clientClient: ClientGrpc,
     @Inject(ACCOUNT_RPC_PACKAGE_NAME)
     private readonly accountClient: ClientGrpc,
-    @Inject('TRANSACTION') private readonly tcpTransactionService: ClientProxy,
+    @Inject(TRANSACTION_RPC_PACKAGE_NAME)
+    private readonly transactionClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
@@ -52,6 +58,10 @@ export class ClientController {
     this.accountRpcService = this.accountClient.getService<AccountRpcService>(
       ACCOUNT_RPC_SERVICE_NAME,
     );
+    this.transactionRpcService =
+      this.transactionClient.getService<TransactionRpcService>(
+        TRANSACTION_RPC_SERVICE_NAME,
+      );
   }
 
   @Get(':id')
@@ -90,14 +100,15 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
   getTransactions(
-    @Param('id', ParseUUIDPipe) _id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.tcpTransactionService.send({ cmd: 'get-client-transactions' }, [
-      _id,
-      { startDate, endDate },
-    ]);
+    return this.transactionRpcService.getClientTransactions({
+      clientId: id,
+      endDate,
+      startDate,
+    });
   }
 
   @Get(':id/accounts')

@@ -7,14 +7,27 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  TRANSACTION_RPC_PACKAGE_NAME,
+  TRANSACTION_RPC_SERVICE_NAME,
+  TransactionRpcService,
+} from 'common-rpc';
 
 @ApiTags('Transaction API')
 @Controller('transaction')
 export class TransactionController {
+  private transactionRpcService: TransactionRpcService;
+
   constructor(
-    @Inject('TRANSACTION') private readonly tcpTransactionService: ClientProxy,
+    @Inject(TRANSACTION_RPC_PACKAGE_NAME) private readonly client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.transactionRpcService = this.client.getService<TransactionRpcService>(
+      TRANSACTION_RPC_SERVICE_NAME,
+    );
+  }
 
   @Get(':id')
   @ApiOperation({
@@ -27,7 +40,7 @@ export class TransactionController {
   })
   @ApiOkResponse({ type: ResponseTransactionDto })
   getById(@Param('id') id: string) {
-    return this.tcpTransactionService.send({ cmd: 'get-transaction' }, id);
+    return this.transactionRpcService.get({ id });
   }
 
   @Post('search')
@@ -45,9 +58,6 @@ export class TransactionController {
   })
   @ApiBody({ type: CreateTransactionDto })
   new(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.tcpTransactionService.send(
-      { cmd: 'create-transaction' },
-      createTransactionDto,
-    );
+    return this.transactionRpcService.create(createTransactionDto);
   }
 }

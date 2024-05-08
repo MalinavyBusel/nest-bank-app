@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionEntity,
 } from 'common-model';
-import { DataSource, Repository, LessThan, MoreThan, And } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { convertCurrency } from './helpers/currency.converter';
 
 @Injectable()
@@ -29,11 +29,13 @@ export class AppService {
     return this.transactionRepository.findOneBy({ id });
   }
 
-  async getClientTransactions(
-    data: [string, { startDate?: string; endDate?: string }],
-  ): Promise<Transaction[]> {
-    const [id, dates] = data;
-    let { startDate, endDate } = dates;
+  async getClientTransactions(data: {
+    clientId: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<Transaction[]> {
+    let { startDate, endDate } = data;
+    const { clientId } = data;
     if (startDate === undefined) {
       startDate = new Date(0).toISOString();
     }
@@ -44,7 +46,7 @@ export class AppService {
     return await this.transactionRepository
       .createQueryBuilder('transaction')
       .leftJoin('transaction.from', 'account')
-      .where('account.clientId = :id', { id })
+      .where('account.clientId = :clientId', { clientId })
       .andWhere('datetime between :startDate and :endDate', {
         startDate,
         endDate,
@@ -52,7 +54,7 @@ export class AppService {
       .getMany();
   }
 
-  async create(data: Omit<Transaction, 'id'>): Promise<string> {
+  async create(data: Omit<Transaction, 'id' | 'datetime'>): Promise<string> {
     const fromAcc = await this.accountRepository.findOneByOrFail({
       id: data.fromId,
     });
@@ -66,16 +68,16 @@ export class AppService {
       id: fromAcc.clientId,
     });
 
-    const amountWithComission = this.calculateAmountWithComission(
+    const amountWithCommission = this.calculateAmountWithCommission(
       fromBank,
       toAcc.bankId,
       fromClient,
       data.amount,
     );
-    if (amountWithComission > fromAcc.amount) {
+    if (amountWithCommission > fromAcc.amount) {
       return 'not enough money';
     }
-    fromAcc.amount -= amountWithComission;
+    fromAcc.amount -= amountWithCommission;
     const converted = await convertCurrency(
       fromAcc.currency,
       toAcc.currency,
@@ -85,7 +87,7 @@ export class AppService {
     return this.runDatabaseTransaction(fromAcc, toAcc, data);
   }
 
-  private calculateAmountWithComission(
+  private calculateAmountWithCommission(
     bank: BankEntity,
     targetBankId: string,
     client: ClientEntity,
@@ -95,26 +97,29 @@ export class AppService {
       return amount;
     }
 
-    let comission = 0;
+    let commission = 0;
     if (client.type === clientTypesEnum.INDIVIDUAL) {
-      comission = bank.individualCommission;
+      commission = bank.individualCommission;
     } else {
-      comission = bank.entityCommission;
+      commission = bank.entityCommission;
     }
-    return amount * ((100 + comission) / 100);
+    return amount * ((100 + commission) / 100);
   }
 
   private async runDatabaseTransaction(
     fromAcc: AccountEntity,
     toAcc: AccountEntity,
-    data: Omit<Transaction, 'id'>,
+    data: Omit<Transaction, 'id' | 'datetime'>,
   ) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.startTransaction();
     try {
       await queryRunner.manager.save(fromAcc);
       await queryRunner.manager.save(toAcc);
-      const transaction = queryRunner.manager.create(TransactionEntity, data);
+      const transaction = queryRunner.manager.create<
+        TransactionEntity,
+        Omit<Transaction, 'id' | 'datetime'>
+      >(TransactionEntity, data);
       await queryRunner.manager.save(transaction);
       await queryRunner.commitTransaction();
       return transaction.id;

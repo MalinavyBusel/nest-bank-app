@@ -2,7 +2,9 @@ import { Transaction } from 'common-model';
 import { IsUUID, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateTransactionDto implements Omit<Transaction, 'datetime'> {
+export class CreateTransactionDto
+  implements Omit<Transaction, 'id' | 'datetime'>
+{
   @ApiProperty({
     description: 'the amount of money being sent to the receiver',
   })

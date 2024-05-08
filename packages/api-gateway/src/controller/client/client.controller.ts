@@ -33,6 +33,7 @@ import {
   TRANSACTION_RPC_SERVICE_NAME,
   TransactionRpcService,
 } from 'common-rpc';
+import { GetTransactionsDto } from './dto/getTransactions.client.dto';
 
 @ApiTags('Client API')
 @Controller('client')
@@ -101,13 +102,14 @@ export class ClientController {
   @ApiOkResponse({ type: [ResponseTransactionDto] })
   getTransactions(
     @Param('id', ParseUUIDPipe) id: string,
-    @Query('startDate') startDate: string,
-    @Query('endDate') endDate: string,
+    @Query(ValidationPipe) params: GetTransactionsDto,
+    // @Query('startDate') startDate: string,
+    // @Query('endDate') endDate: string,
   ) {
     return this.transactionRpcService.getClientTransactions({
       clientId: id,
-      endDate,
-      startDate,
+      endDate: params.endDate,
+      startDate: params.startDate,
     });
   }
 

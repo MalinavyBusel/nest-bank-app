@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateTransactionDto, ResponseTransactionDto } from './dto';
 import {
   ApiBody,
@@ -39,7 +48,7 @@ export class TransactionController {
     description: 'the string representation of the target transaction UUID',
   })
   @ApiOkResponse({ type: ResponseTransactionDto })
-  getById(@Param('id') id: string) {
+  getById(@Param('id', ParseUUIDPipe) id: string) {
     return this.transactionRpcService.get({ id });
   }
 
@@ -57,7 +66,7 @@ export class TransactionController {
     description: 'Creates a new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  new(@Body() createTransactionDto: CreateTransactionDto) {
+  new(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
     return this.transactionRpcService.create(createTransactionDto);
   }
 }

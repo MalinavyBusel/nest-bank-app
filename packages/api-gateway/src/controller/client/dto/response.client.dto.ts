@@ -8,9 +8,12 @@ export class ResponseClientDto implements Omit<Client, 'password'> {
   @ApiProperty({ description: 'name of the client' })
   name: string;
 
-  @ApiProperty({ description: 'type of the client - entity or individual' })
+  @ApiProperty({
+    description: 'type of the client - entity or individual',
+    example: 'entity',
+  })
   type: clientTypesEnum;
 
-  @ApiProperty({ description: 'clients email' })
+  @ApiProperty({ description: 'clients email', example: 'email@example.com' })
   email: string;
 }

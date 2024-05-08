@@ -8,7 +8,10 @@ export class ResponseTransactionDto implements Transaction {
   @ApiProperty({ description: 'amount of money in the transaction' })
   amount: number;
 
-  @ApiProperty({ description: 'date and time when transaction was performed' })
+  @ApiProperty({
+    description: 'date and time when transaction was performed',
+    example: 'YYYY-MM-DD HH:mm:ss',
+  })
   datetime: string;
 
   @ApiProperty({ description: 'UUID string of the sender account' })

@@ -2,8 +2,10 @@ import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { Transaction } from 'common-model';
-import { TransactionRpcService } from 'common-rpc';
-import { TRANSACTION_RPC_SERVICE_NAME } from 'common-rpc/dist';
+import {
+  TransactionRpcService,
+  TRANSACTION_RPC_SERVICE_NAME,
+} from 'common-rpc';
 
 @Controller()
 export class AppController implements TransactionRpcService {

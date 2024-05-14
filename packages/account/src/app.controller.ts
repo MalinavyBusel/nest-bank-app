@@ -9,8 +9,8 @@ export class AppController implements AccountRpcService {
   constructor(private readonly appService: AppService) {}
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'get')
-  async getById(accountId: { id: string }): Promise<Account> {
-    return this.appService.getById(accountId.id);
+  async get(accountId: { id: string }): Promise<{ account: Account | null }> {
+    return { account: await this.appService.getById(accountId.id) };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'create')

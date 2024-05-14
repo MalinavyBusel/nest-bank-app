@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreateBankDto, ResponseBankDto, UpdateBankDto } from './dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -27,6 +28,7 @@ import {
 import { Bank } from 'common-model';
 
 @ApiTags('Bank API')
+@ApiBearerAuth()
 @Controller('bank')
 export class BankController {
   private bankRpcService: BankRpcService;
@@ -51,8 +53,10 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  getById(@Param('id', ParseUUIDPipe) id: string): { bank: Bank | null } {
-    return this.bankRpcService.get({ id });
+  async getById(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<{ bank: Bank | null }> {
+    return await this.bankRpcService.get({ id });
   }
 
   @Post('search')
@@ -61,8 +65,8 @@ export class BankController {
     description: 'Returns all banks filtered by condition',
   })
   @ApiOkResponse({ type: [ResponseBankDto] })
-  find(): { banks: Bank[] } {
-    return this.bankRpcService.find({});
+  async find(): Promise<{ banks: Bank[] }> {
+    return await this.bankRpcService.find({});
   }
 
   @Post('create')
@@ -71,8 +75,10 @@ export class BankController {
     description: 'Creates new bank',
   })
   @ApiBody({ type: CreateBankDto })
-  create(@Body(ValidationPipe) createBankDto: CreateBankDto): { id: string } {
-    return this.bankRpcService.create(createBankDto);
+  async create(
+    @Body(ValidationPipe) createBankDto: CreateBankDto,
+  ): Promise<{ id: string }> {
+    return await this.bankRpcService.create(createBankDto);
   }
 
   @Patch(':id')
@@ -85,11 +91,11 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiBody({ type: UpdateBankDto })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateBankDto: UpdateBankDto,
-  ): { affected: number } {
-    return this.bankRpcService.update({ id, ...updateBankDto });
+  ): Promise<{ affected: number }> {
+    return await this.bankRpcService.update({ id, ...updateBankDto });
   }
 
   @Delete(':id')
@@ -101,7 +107,9 @@ export class BankController {
     name: 'id',
     description: 'the string representation of the target bank UUID',
   })
-  delete(@Param('id', ParseUUIDPipe) id: string): { affected: number } {
-    return this.bankRpcService.delete({ id });
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<{ affected: number }> {
+    return await this.bankRpcService.delete({ id });
   }
 }

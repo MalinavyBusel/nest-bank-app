@@ -9,8 +9,7 @@ import {
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ClientGrpc } from '@nestjs/microservices';
 import { LoginDto } from './dto';
-import { firstValueFrom } from 'rxjs';
-import { Public } from '../auth.guard';
+import { Public } from '../../common/auth.guard';
 import {
   AUTH_RPC_PACKAGE_NAME,
   AUTH_RPC_SERVICE_NAME,
@@ -40,7 +39,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   async login(@Body(ValidationPipe) loginDto: LoginDto) {
     try {
-      return await firstValueFrom(this.authRpcService.login(loginDto));
+      return await this.authRpcService.login(loginDto);
     } catch (error) {
       throw new HttpException(error.message, 404);
     }

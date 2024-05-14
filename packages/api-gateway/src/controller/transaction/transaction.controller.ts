@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CreateTransactionDto, ResponseTransactionDto } from './dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -24,6 +25,7 @@ import {
 } from 'common-rpc';
 
 @ApiTags('Transaction API')
+@ApiBearerAuth()
 @Controller('transaction')
 export class TransactionController {
   private transactionRpcService: TransactionRpcService;
@@ -66,7 +68,7 @@ export class TransactionController {
     description: 'Creates a new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  new(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
+  create(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
     return this.transactionRpcService.create(createTransactionDto);
   }
 }

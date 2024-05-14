@@ -4,18 +4,17 @@ import {
   Delete,
   Get,
   Inject,
-  Param,
-  ParseUUIDPipe,
   Post,
   Query,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateClientDto, ResponseClientDto } from './dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -34,8 +33,12 @@ import {
   TransactionRpcService,
 } from 'common-rpc';
 import { GetTransactionsDto } from './dto/getTransactions.client.dto';
+import { IdExtractorService } from '../../common/id-extractor/id-extractor.service';
+import { Request } from 'express';
+import { Public } from '../../common/auth.guard';
 
 @ApiTags('Client API')
+@ApiBearerAuth()
 @Controller('client')
 export class ClientController {
   private clientRpcService: ClientRpcService;
@@ -50,6 +53,7 @@ export class ClientController {
     private readonly accountClient: ClientGrpc,
     @Inject(TRANSACTION_RPC_PACKAGE_NAME)
     private readonly transactionClient: ClientGrpc,
+    private readonly idExtractorService: IdExtractorService,
   ) {}
 
   onModuleInit() {
@@ -65,29 +69,22 @@ export class ClientController {
       );
   }
 
-  @Get(':id')
+  @Get('get')
   @ApiOperation({
-    summary: 'Get client by id',
+    summary: 'Get client by id from token',
     description: 'Returns client with the same UUID',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'the string representation of the target client UUID',
-  })
   @ApiOkResponse({ type: ResponseClientDto })
-  getById(@Param('id', ParseUUIDPipe) id: string) {
+  getById(@Req() request: Request) {
+    const id = this.idExtractorService.getClientIdFromAccessToken(request);
     return this.clientRpcService.get({ id });
   }
 
-  @Get(':id/transactions')
+  @Get('transactions')
   @ApiOperation({
     summary: 'Returns all clients transactions',
     description:
       'Returns all transactions that was initiated by client with provided UUID',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'the string representation of the target client UUID',
   })
   @ApiQuery({
     required: false,
@@ -101,11 +98,10 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
   getTransactions(
-    @Param('id', ParseUUIDPipe) id: string,
     @Query(ValidationPipe) params: GetTransactionsDto,
-    // @Query('startDate') startDate: string,
-    // @Query('endDate') endDate: string,
+    @Req() request: Request,
   ) {
+    const id = this.idExtractorService.getClientIdFromAccessToken(request);
     return this.transactionRpcService.getClientTransactions({
       clientId: id,
       endDate: params.endDate,
@@ -113,17 +109,19 @@ export class ClientController {
     });
   }
 
-  @Get(':id/accounts')
+  // @Get(':id/accounts')
+  // @ApiParam({
+  //   name: 'id',
+  //   description: 'the string representation of the target client UUID',
+  // })
+  @Get('accounts')
   @ApiOperation({
     summary: 'Returns all clients accounts',
     description: 'Returns all accounts owned by client with provided UUID',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'the string representation of the target client UUID',
-  })
   @ApiOkResponse({ type: [ResponseAccountDto] })
-  getAccounts(@Param('id', ParseUUIDPipe) id: string) {
+  getAccounts(@Req() request: Request) {
+    const id = this.idExtractorService.getClientIdFromAccessToken(request);
     return this.accountRpcService.getClientAccounts({ id });
   }
 
@@ -137,6 +135,7 @@ export class ClientController {
     return this.clientRpcService.find({});
   }
 
+  @Public()
   @Post('create')
   @ApiOperation({
     summary: 'Creates new client',
@@ -147,16 +146,13 @@ export class ClientController {
     return this.clientRpcService.create(createClientDto);
   }
 
-  @Delete(':id')
+  @Delete('delete')
   @ApiOperation({
-    summary: 'Deletes a client by id',
+    summary: 'Deletes a client by id from token',
     description: 'Deletes a client with the same UUID and all its accounts',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'the string representation of the target client UUID',
-  })
-  delete(@Param('id', ParseUUIDPipe) id: string) {
+  delete(@Req() request: Request) {
+    const id = this.idExtractorService.getClientIdFromAccessToken(request);
     return this.clientRpcService.delete({ id });
   }
 }

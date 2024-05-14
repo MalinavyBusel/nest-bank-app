@@ -9,7 +9,7 @@ export class AppController implements ClientRpcService {
   constructor(private readonly appService: AppService) {}
 
   @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'get')
-  async getById(clientId: {
+  async get(clientId: {
     id: string;
   }): Promise<{ client: Omit<Client, 'password'> }> {
     const client = await this.appService.getById(clientId.id);

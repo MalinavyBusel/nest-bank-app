@@ -8,6 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('bank app')
     .setDescription('the description of the bank management app api')
+    .addBearerAuth({ type: 'http' })
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

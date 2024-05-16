@@ -27,8 +27,9 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.10.7",
     "@grpc/proto-loader": "^0.7.13",
-    "grpc": "^1.24.11",
-    "common-model": "*"
+    "@nestjs/microservices": "^10.3.8",
+    "common-model": "*",
+    "grpc": "^1.24.11"
   },
   "devDependencies": {}
 }

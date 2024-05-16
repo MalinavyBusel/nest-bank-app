@@ -22,6 +22,7 @@ import {
   transactionRpcOptions,
 } from 'common-rpc';
 import * as process from 'node:process';
+import { HttpExceptionFilter } from '../common/exception.filter';
 
 const jwtFactory = {
   imports: [ConfigModule.forRoot()],
@@ -47,6 +48,10 @@ const jwtFactory = {
     {
       provide: 'APP_GUARD',
       useClass: AuthGuard,
+    },
+    {
+      provide: 'APP_FILTER',
+      useClass: HttpExceptionFilter,
     },
     {
       provide: BANK_RPC_PACKAGE_NAME,

@@ -15,6 +15,7 @@ import {
   AUTH_RPC_SERVICE_NAME,
   AuthRpcService,
 } from 'common-rpc';
+import { catchError, Observable } from 'rxjs';
 
 @ApiTags('Auth API')
 @Controller('auth')
@@ -38,10 +39,7 @@ export class AuthController {
   })
   @ApiBody({ type: LoginDto })
   async login(@Body(ValidationPipe) loginDto: LoginDto) {
-    try {
-      return await this.authRpcService.login(loginDto);
-    } catch (error) {
-      throw new HttpException(error.message, 404);
-    }
+    const a = this.authRpcService.login(loginDto);
+    return a as unknown as Observable<any>;
   }
 }

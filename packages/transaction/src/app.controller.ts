@@ -16,8 +16,7 @@ export class AppController implements TransactionRpcService {
     data: Omit<Transaction, 'id' | 'datetime'>;
     payload: { clientId: string };
   }): Promise<{ id: string }> {
-    const id = await this.appService.create(createRequest);
-    return { id };
+    return this.appService.create(createRequest);
   }
 
   @GrpcMethod(TRANSACTION_RPC_SERVICE_NAME, 'getClientTransactions')

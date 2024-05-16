@@ -1,4 +1,12 @@
-import { Body, Controller, Inject, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  Inject,
+  Post,
+  Req,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateTransactionDto } from './dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -7,6 +15,8 @@ import {
   TRANSACTION_RPC_SERVICE_NAME,
   TransactionRpcService,
 } from 'common-rpc';
+import { Request } from 'express';
+import { IdExtractorService } from '../../common/id-extractor/id-extractor.service';
 
 @ApiTags('Transaction API')
 @ApiBearerAuth()
@@ -16,6 +26,7 @@ export class TransactionController {
 
   constructor(
     @Inject(TRANSACTION_RPC_PACKAGE_NAME) private readonly client: ClientGrpc,
+    private readonly idExtractorService: IdExtractorService,
   ) {}
 
   onModuleInit() {
@@ -30,10 +41,21 @@ export class TransactionController {
     description: 'Creates a new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  create(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
-    return this.transactionRpcService.create({
-      data: createTransactionDto,
-      payload: { clientId: '' },
-    });
+  async create(
+    @Body(ValidationPipe) createTransactionDto: CreateTransactionDto,
+    @Req() request: Request,
+  ) {
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    try {
+      const a = await this.transactionRpcService.create({
+        data: createTransactionDto,
+        payload,
+      });
+      console.log(a);
+      return a;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, 404);
+    }
   }
 }

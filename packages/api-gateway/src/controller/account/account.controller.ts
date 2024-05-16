@@ -61,9 +61,8 @@ export class AccountController {
     @Param('id', ParseUUIDPipe) accId: string,
     @Req() request: Request,
   ) {
-    const acc = await this.accountRpcService.get({ id: accId });
-    console.log('after get', acc);
-    return this.accountRpcService.get({ id: accId });
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    return this.accountRpcService.get({ payload, data: { id: accId } });
   }
 
   @Post('search')
@@ -87,10 +86,12 @@ export class AccountController {
     @Body(ValidationPipe) createAccountDto: CreateAccountDto,
     @Req() request: Request,
   ) {
-    const clientId =
-      this.idExtractorService.getClientIdFromAccessToken(request);
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
 
-    return this.accountRpcService.create({ ...createAccountDto, clientId });
+    return this.accountRpcService.create({
+      payload,
+      data: { ...createAccountDto },
+    });
   }
 
   @Patch(':id')
@@ -119,7 +120,9 @@ export class AccountController {
     name: 'id',
     description: 'the string representation of the target account UUID',
   })
-  delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accountRpcService.delete({ id });
+  delete(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
+    return this.accountRpcService.delete({ data: { id }, payload });
   }
 }

@@ -1,22 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  ValidationPipe,
-} from '@nestjs/common';
-import { CreateTransactionDto, ResponseTransactionDto } from './dto';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Inject, Post, ValidationPipe } from '@nestjs/common';
+import { CreateTransactionDto } from './dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ClientGrpc } from '@nestjs/microservices';
 import {
   TRANSACTION_RPC_PACKAGE_NAME,
@@ -40,28 +24,6 @@ export class TransactionController {
     );
   }
 
-  @Get(':id')
-  @ApiOperation({
-    summary: 'Get transaction by id',
-    description: 'Returns transaction with the same UUID',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'the string representation of the target transaction UUID',
-  })
-  @ApiOkResponse({ type: ResponseTransactionDto })
-  getById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.transactionRpcService.get({ id });
-  }
-
-  @Post('search')
-  @ApiOperation({
-    summary: 'Returns all transactions  filtered by condition',
-    description: 'Returns all transactions filtered by condition',
-  })
-  @ApiOkResponse({ type: [ResponseTransactionDto] })
-  find() {}
-
   @Post('create')
   @ApiOperation({
     summary: 'Creates a new transaction',
@@ -69,6 +31,9 @@ export class TransactionController {
   })
   @ApiBody({ type: CreateTransactionDto })
   create(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
-    return this.transactionRpcService.create(createTransactionDto);
+    return this.transactionRpcService.create({
+      data: createTransactionDto,
+      payload: { clientId: '' },
+    });
   }
 }

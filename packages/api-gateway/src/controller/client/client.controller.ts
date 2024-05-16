@@ -76,8 +76,8 @@ export class ClientController {
   })
   @ApiOkResponse({ type: ResponseClientDto })
   getById(@Req() request: Request) {
-    const id = this.idExtractorService.getClientIdFromAccessToken(request);
-    return this.clientRpcService.get({ id });
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    return this.clientRpcService.get({ id: payload.clientId });
   }
 
   @Get('transactions')
@@ -96,16 +96,30 @@ export class ClientController {
     name: 'endDate',
     description: 'all returned transactions will be older than endDate',
   })
+  @ApiQuery({
+    required: false,
+    name: 'take',
+    description: 'how many records will be returned',
+  })
+  @ApiQuery({
+    required: false,
+    name: 'skip',
+    description: 'the offset of the returned records',
+  })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
   getTransactions(
     @Query(ValidationPipe) params: GetTransactionsDto,
     @Req() request: Request,
   ) {
-    const id = this.idExtractorService.getClientIdFromAccessToken(request);
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
     return this.transactionRpcService.getClientTransactions({
-      clientId: id,
-      endDate: params.endDate,
-      startDate: params.startDate,
+      payload,
+      data: {
+        endDate: params.endDate,
+        startDate: params.startDate,
+        take: params.take,
+        skip: params.skip,
+      },
     });
   }
 
@@ -121,8 +135,8 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
   getAccounts(@Req() request: Request) {
-    const id = this.idExtractorService.getClientIdFromAccessToken(request);
-    return this.accountRpcService.getClientAccounts({ id });
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    return this.accountRpcService.getClientAccounts(payload);
   }
 
   @Post('search')
@@ -152,7 +166,7 @@ export class ClientController {
     description: 'Deletes a client with the same UUID and all its accounts',
   })
   delete(@Req() request: Request) {
-    const id = this.idExtractorService.getClientIdFromAccessToken(request);
-    return this.clientRpcService.delete({ id });
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    return this.clientRpcService.delete({ id: payload.clientId });
   }
 }

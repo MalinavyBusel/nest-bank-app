@@ -25,41 +25,52 @@ export class AppService {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async getById(id: string): Promise<Transaction | null> {
-    return this.transactionRepository.findOneBy({ id });
-  }
-
-  async getClientTransactions(data: {
-    clientId: string;
-    startDate: string;
-    endDate: string;
+  async getClientTransactions(dto: {
+    data: {
+      startDate?: string;
+      endDate?: string;
+      skip?: number;
+      take?: number;
+    };
+    payload: { clientId: string };
   }): Promise<Transaction[]> {
-    let { startDate, endDate } = data;
-    const { clientId } = data;
-    if (startDate === undefined) {
-      startDate = new Date(0).toISOString();
-    }
-    if (endDate === undefined) {
-      endDate = new Date().toISOString();
-    }
+    const { startDate, endDate, skip, take } = dto.data;
+    const { clientId } = dto.payload;
 
-    return await this.transactionRepository
+    const res = this.transactionRepository
       .createQueryBuilder('transaction')
-      .leftJoin('transaction.from', 'account')
-      .where('account.clientId = :clientId', { clientId })
-      .andWhere('datetime between :startDate and :endDate', {
-        startDate,
-        endDate,
+      .where((qb) => {
+        const subq = qb
+          .subQuery()
+          .select('id')
+          .from(AccountEntity, 'acc')
+          .where('acc.clientId = :clientId', { clientId })
+          .getQuery();
+        return 'transaction.fromId IN ' + subq;
       })
+      .andWhere(
+        '(cast(:startDate as date) is null OR :startDate <= transaction.datetime)',
+        { startDate },
+      )
+      .andWhere(
+        '(cast(:endDate as date) is null OR :endDate >= transaction.datetime)',
+        { endDate },
+      )
+      .skip(skip)
+      .take(take)
       .getMany();
+    return res;
   }
 
-  async create(data: Omit<Transaction, 'id' | 'datetime'>): Promise<string> {
+  async create(createRequest: {
+    data: Omit<Transaction, 'id' | 'datetime'>;
+    payload: { clientId: string };
+  }): Promise<string> {
     const fromAcc = await this.accountRepository.findOneByOrFail({
-      id: data.fromId,
+      id: createRequest.data.fromId,
     });
     const toAcc = await this.accountRepository.findOneByOrFail({
-      id: data.toId,
+      id: createRequest.data.toId,
     });
     const fromBank = await this.bankRepository.findOneByOrFail({
       id: fromAcc.bankId,
@@ -72,7 +83,7 @@ export class AppService {
       fromBank,
       toAcc.bankId,
       fromClient,
-      data.amount,
+      createRequest.data.amount,
     );
     if (amountWithCommission > fromAcc.amount) {
       return 'not enough money';
@@ -81,10 +92,10 @@ export class AppService {
     const converted = await convertCurrency(
       fromAcc.currency,
       toAcc.currency,
-      data.amount,
+      createRequest.data.amount,
     );
     toAcc.amount += converted;
-    return this.runDatabaseTransaction(fromAcc, toAcc, data);
+    return this.runDatabaseTransaction(fromAcc, toAcc, createRequest.data);
   }
 
   private calculateAmountWithCommission(

@@ -9,11 +9,11 @@ export class IdExtractorService {
     return token;
   }
 
-  public getClientIdFromAccessToken(request: Request): string {
+  public getClientIdFromAccessToken(request: Request): { clientId: string } {
     const token = this.extractTokenFromHeader(request);
     const decoded = jwtDecode<Payload>(token);
 
-    return decoded.sub;
+    return { clientId: decoded.sub };
   }
 }
 

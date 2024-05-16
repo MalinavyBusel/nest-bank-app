@@ -2,13 +2,17 @@ import { BaseRpcService } from '../base';
 import { Transaction } from 'common-model';
 
 export interface TransactionRpcService extends BaseRpcService {
-  get(transactionId: { id: string }): Promise<{ transaction: Transaction }>;
-  create(
-    transaction: Omit<Transaction, 'id' | 'datetime'>,
-  ): Promise<{ id: string }>;
-  getClientTransactions(data: {
-    clientId: string;
-    startDate: string;
-    endDate: string;
+  create(createRequest: {
+    data: Omit<Transaction, 'id' | 'datetime'>;
+    payload: { clientId: string };
+  }): Promise<{ id: string }>;
+  getClientTransactions(getClientTransactionsRequest: {
+    data: {
+      startDate?: string;
+      endDate?: string;
+      skip?: number;
+      take?: number;
+    };
+    payload: { clientId: string };
   }): Promise<{ transactions: Transaction[] }>;
 }

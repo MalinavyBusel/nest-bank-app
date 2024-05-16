@@ -3,20 +3,35 @@ syntax = "proto3";
 package account;
 
 service AccountService {
-  rpc get (AccountId) returns (getAccountResponse) {}
-  rpc create (createAccountRequest) returns (AccountId) {}
+  rpc get (GetRequest) returns (getAccountResponse) {}
+  rpc create (CreateRequest) returns (AccountId) {}
   rpc find (RpcEmpty) returns (AccountList) {}
-  rpc update (updateAccountRequest) returns (recordsAffected) {}
-  rpc delete (AccountId) returns (recordsAffected) {}
-  rpc getClientAccounts (ClientId) returns (AccountList) {}
+  rpc update (UpdateRequest) returns (recordsAffected) {}
+  rpc delete (DeleteRequest) returns (recordsAffected) {}
+  rpc getClientAccounts (Payload) returns (AccountList) {}
+}
+
+message GetRequest {
+  Payload payload = 1;
+  AccountId data = 2;
+}
+
+message CreateRequest {
+  Payload payload = 1;
+  CreateData data = 2;
+}
+
+message DeleteRequest {
+  Payload payload = 1;
+  AccountId data = 2;
 }
 
 message AccountId {
   string id = 1;
 }
 
-message ClientId {
-  string id = 1;
+message Payload {
+  string clientId = 1;
 }
 
 message RpcEmpty {}
@@ -39,14 +54,13 @@ message Account {
   currencyTypes currency = 5;
 }
 
-message createAccountRequest {
-  string clientId = 1;
-  string bankId = 2;
-  double amount = 3;
-  currencyTypes currency = 4;
+message CreateData {
+  string bankId = 1;
+  double amount = 2;
+  currencyTypes currency = 3;
 }
 
-message updateAccountRequest {
+message UpdateRequest {
   string id = 1;
   double amount = 2;
 }

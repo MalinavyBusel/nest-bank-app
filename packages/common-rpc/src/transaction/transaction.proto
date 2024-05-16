@@ -3,19 +3,33 @@ syntax = "proto3";
 package transaction;
 
 service TransactionService {
-  rpc get (TransactionId) returns (getTransactionResponse) {}
-  rpc create (createTransactionRequest) returns (TransactionId) {}
-  rpc getClientTransactions (getClientTransactionsRequest) returns (TransactionList) {}
+  rpc create (CreateRequest) returns (TransactionId) {}
+  rpc getClientTransactions (GetClientTransactionsRequest) returns (TransactionList) {}
 }
 
 message TransactionId {
   string id = 1;
 }
 
-message getClientTransactionsRequest {
+message CreateRequest {
+  Payload payload = 1;
+  CreateData data = 2;
+}
+
+message GetClientTransactionsRequest {
+  Payload payload = 1;
+  GetTransactionsData data = 2;
+}
+
+message Payload {
   string clientId = 1;
-  string startDate = 2;
-  string endDate = 3;
+}
+
+message GetTransactionsData {
+  string startDate = 1;
+  string endDate = 2;
+  int32  skip = 3;
+  int32  take = 4;
 }
 
 message TransactionList {
@@ -30,11 +44,7 @@ message Transaction {
   double amount = 5;
 }
 
-message getTransactionResponse {
-  Transaction transaction = 1;
-}
-
-message createTransactionRequest {
+message CreateData {
   string fromId = 1;
   string toId = 2;
   double amount = 3;

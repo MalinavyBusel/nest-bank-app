@@ -3,20 +3,35 @@ import { Response } from 'express';
 import { status } from 'grpc';
 
 @Catch()
-export class HttpExceptionFilter implements ExceptionFilter {
+export class GrpcExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    response.status(200).json({
-      statusCode: mapStatusCode(exception.code),
-      timestamp: new Date().toISOString(),
-      message: exception.details,
-    });
+    let message: string;
+    let status: number;
+    if (this.isRpcException(exception)) {
+      status = mapRpcStatusCode(exception.code);
+      message = exception.details;
+    } else {
+      status = exception.status;
+      message = exception.message;
+    }
+
+    response.status(status).json(message);
+  }
+
+  private isRpcException(exception: any): boolean {
+    return (
+      exception instanceof Error &&
+      exception.hasOwnProperty('code') &&
+      exception.hasOwnProperty('details') &&
+      Object.values(status).includes((exception as any).code)
+    );
   }
 }
 
-function mapStatusCode(statusCode: number): number {
+function mapRpcStatusCode(statusCode: number): number {
   switch (statusCode) {
     case status.PERMISSION_DENIED:
       return 403;

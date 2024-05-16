@@ -42,8 +42,6 @@ export class AppService {
 
   async update(data: { id: string; amount: number }): Promise<number> {
     const { id, amount } = data;
-    // TODO
-    // do smth with update logic
     const updateResult = await this.accountRepository.update(
       { id },
       { amount },

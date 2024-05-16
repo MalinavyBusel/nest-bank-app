@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  HttpException,
   Inject,
   Post,
   Req,
@@ -17,6 +16,7 @@ import {
 } from 'common-rpc';
 import { Request } from 'express';
 import { IdExtractorService } from '../../common/id-extractor/id-extractor.service';
+import { Observable } from 'rxjs';
 
 @ApiTags('Transaction API')
 @ApiBearerAuth()
@@ -46,16 +46,10 @@ export class TransactionController {
     @Req() request: Request,
   ) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
-    try {
-      const a = await this.transactionRpcService.create({
-        data: createTransactionDto,
-        payload,
-      });
-      console.log(a);
-      return a;
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(error.message, 404);
-    }
+    const a = this.transactionRpcService.create({
+      data: createTransactionDto,
+      payload,
+    });
+    return a as unknown as Observable<any>;
   }
 }

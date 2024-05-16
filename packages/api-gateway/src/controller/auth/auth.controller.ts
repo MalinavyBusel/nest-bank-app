@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  Inject,
-  Post,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Inject, Post, ValidationPipe } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ClientGrpc } from '@nestjs/microservices';
 import { LoginDto } from './dto';
@@ -15,7 +8,7 @@ import {
   AUTH_RPC_SERVICE_NAME,
   AuthRpcService,
 } from 'common-rpc';
-import { catchError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @ApiTags('Auth API')
 @Controller('auth')

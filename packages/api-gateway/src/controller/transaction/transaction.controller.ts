@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateTransactionDto, ResponseTransactionDto } from './dto';
 import {
   ApiBody,
@@ -7,10 +16,28 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  TRANSACTION_RPC_PACKAGE_NAME,
+  TRANSACTION_RPC_SERVICE_NAME,
+  TransactionRpcService,
+} from 'common-rpc';
 
 @ApiTags('Transaction API')
 @Controller('transaction')
 export class TransactionController {
+  private transactionRpcService: TransactionRpcService;
+
+  constructor(
+    @Inject(TRANSACTION_RPC_PACKAGE_NAME) private readonly client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.transactionRpcService = this.client.getService<TransactionRpcService>(
+      TRANSACTION_RPC_SERVICE_NAME,
+    );
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get transaction by id',
@@ -21,7 +48,9 @@ export class TransactionController {
     description: 'the string representation of the target transaction UUID',
   })
   @ApiOkResponse({ type: ResponseTransactionDto })
-  getById(@Param('id') _id: string) {}
+  getById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.transactionRpcService.get({ id });
+  }
 
   @Post('search')
   @ApiOperation({
@@ -37,5 +66,7 @@ export class TransactionController {
     description: 'Creates a new transaction',
   })
   @ApiBody({ type: CreateTransactionDto })
-  new(@Body() _createTransactionDto: CreateTransactionDto) {}
+  new(@Body(ValidationPipe) createTransactionDto: CreateTransactionDto) {
+    return this.transactionRpcService.create(createTransactionDto);
+  }
 }

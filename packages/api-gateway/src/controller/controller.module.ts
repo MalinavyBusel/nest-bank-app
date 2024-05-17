@@ -17,6 +17,8 @@ import {
   authRpcOptions,
   ACCOUNT_RPC_PACKAGE_NAME,
   accountRpcOptions,
+  TRANSACTION_RPC_PACKAGE_NAME,
+  transactionRpcOptions,
 } from 'common-rpc';
 
 const jwtFactory = {
@@ -66,6 +68,12 @@ const jwtFactory = {
       provide: ACCOUNT_RPC_PACKAGE_NAME,
       useFactory: () => {
         return ClientProxyFactory.create(accountRpcOptions());
+      },
+    },
+    {
+      provide: TRANSACTION_RPC_PACKAGE_NAME,
+      useFactory: () => {
+        return ClientProxyFactory.create(transactionRpcOptions());
       },
     },
   ],

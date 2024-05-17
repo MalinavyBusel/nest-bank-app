@@ -24,6 +24,7 @@ export class ResponseAccountDto implements Account {
 
   @ApiProperty({
     description: 'type of the currency the account is using',
+    example: 'USD',
   })
   currency: currencyTypesEnum;
 }

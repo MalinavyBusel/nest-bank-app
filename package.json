@@ -27,6 +27,8 @@
     "start:client:debug": "yarn workspace client start:debug",
     "start:account:dev": "yarn workspace account start:dev",
     "start:account:debug": "yarn workspace account start:debug",
+    "start:transaction:dev": "yarn workspace transaction start:dev",
+    "start:transaction:debug": "yarn workspace transaction start:debug",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -100,6 +102,7 @@
     "packages/api-gateway",
     "packages/bank",
     "packages/client",
-    "packages/account"
+    "packages/account",
+    "packages/transaction"
   ]
 }

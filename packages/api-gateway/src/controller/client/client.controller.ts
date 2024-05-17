@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateClientDto, ResponseClientDto } from './dto';
@@ -15,6 +16,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseTransactionDto } from '../transaction/dto';
@@ -27,7 +29,11 @@ import {
   ACCOUNT_RPC_SERVICE_NAME,
   AccountRpcService,
   ClientRpcService,
+  TRANSACTION_RPC_PACKAGE_NAME,
+  TRANSACTION_RPC_SERVICE_NAME,
+  TransactionRpcService,
 } from 'common-rpc';
+import { GetTransactionsDto } from './dto/getTransactions.client.dto';
 
 @ApiTags('Client API')
 @Controller('client')
@@ -36,10 +42,14 @@ export class ClientController {
 
   private accountRpcService: AccountRpcService;
 
+  private transactionRpcService: TransactionRpcService;
+
   constructor(
     @Inject(CLIENT_RPC_PACKAGE_NAME) private readonly clientClient: ClientGrpc,
     @Inject(ACCOUNT_RPC_PACKAGE_NAME)
     private readonly accountClient: ClientGrpc,
+    @Inject(TRANSACTION_RPC_PACKAGE_NAME)
+    private readonly transactionClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
@@ -49,6 +59,10 @@ export class ClientController {
     this.accountRpcService = this.accountClient.getService<AccountRpcService>(
       ACCOUNT_RPC_SERVICE_NAME,
     );
+    this.transactionRpcService =
+      this.transactionClient.getService<TransactionRpcService>(
+        TRANSACTION_RPC_SERVICE_NAME,
+      );
   }
 
   @Get(':id')
@@ -75,8 +89,29 @@ export class ClientController {
     name: 'id',
     description: 'the string representation of the target client UUID',
   })
+  @ApiQuery({
+    required: false,
+    name: 'startDate',
+    description: 'all returned transactions will be younger than startDate',
+  })
+  @ApiQuery({
+    required: false,
+    name: 'endDate',
+    description: 'all returned transactions will be older than endDate',
+  })
   @ApiOkResponse({ type: [ResponseTransactionDto] })
-  getTransactions(@Param('id', ParseUUIDPipe) _id: string) {}
+  getTransactions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query(ValidationPipe) params: GetTransactionsDto,
+    // @Query('startDate') startDate: string,
+    // @Query('endDate') endDate: string,
+  ) {
+    return this.transactionRpcService.getClientTransactions({
+      clientId: id,
+      endDate: params.endDate,
+      startDate: params.startDate,
+    });
+  }
 
   @Get(':id/accounts')
   @ApiOperation({

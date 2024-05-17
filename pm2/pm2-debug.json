@@ -19,6 +19,10 @@
     {
       "name": "account",
       "script": "yarn start:account:dev"
+    },
+    {
+      "name": "transaction",
+      "script": "yarn start:transaction:dev"
     }
   ]
 }

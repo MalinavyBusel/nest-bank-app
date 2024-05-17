@@ -11,15 +11,16 @@ export class CreateClientDto implements Client {
 
   @ApiProperty({
     description: 'type of the client - entity of individual',
+    example: 'entity',
   })
   @IsEnum(clientTypesEnum)
   type: clientTypesEnum;
 
-  @ApiProperty({ description: 'clients email' })
+  @ApiProperty({ description: 'clients email', example: 'email@example.com' })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: 'clients password' })
+  @ApiProperty({ description: 'clients password', example: 'STR0N9pa$$w0r6' })
   @IsStrongPassword()
   password: string;
 }

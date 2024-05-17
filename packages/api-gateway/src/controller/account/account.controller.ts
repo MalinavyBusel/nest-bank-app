@@ -23,7 +23,7 @@ import {
   ACCOUNT_RPC_PACKAGE_NAME,
   ACCOUNT_RPC_SERVICE_NAME,
   AccountRpcService,
-} from 'common-rpc/dist';
+} from 'common-rpc';
 
 @ApiTags('Account API')
 @Controller('account')

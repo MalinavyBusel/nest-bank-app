@@ -9,7 +9,7 @@ export class CreateBankDto implements Omit<Bank, 'id'> {
   })
   @Min(0)
   @Max(100)
-  entityComission: number;
+  entityCommission: number;
 
   @ApiProperty({
     description:
@@ -17,7 +17,7 @@ export class CreateBankDto implements Omit<Bank, 'id'> {
   })
   @Min(0)
   @Max(100)
-  individualComission: number;
+  individualCommission: number;
 
   @ApiProperty({
     description: 'the name of the bank',

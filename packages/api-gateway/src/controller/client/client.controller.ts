@@ -19,15 +19,37 @@ import {
 } from '@nestjs/swagger';
 import { ResponseTransactionDto } from '../transaction/dto';
 import { ResponseAccountDto } from '../account/dto';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
+import {
+  CLIENT_RPC_PACKAGE_NAME,
+  CLIENT_RPC_SERVICE_NAME,
+  ACCOUNT_RPC_PACKAGE_NAME,
+  ACCOUNT_RPC_SERVICE_NAME,
+  AccountRpcService,
+  ClientRpcService,
+} from 'common-rpc';
 
 @ApiTags('Client API')
 @Controller('client')
 export class ClientController {
+  private clientRpcService: ClientRpcService;
+
+  private accountRpcService: AccountRpcService;
+
   constructor(
-    @Inject('CLIENT') private readonly tcpClientService: ClientProxy,
-    @Inject('ACCOUNT') private readonly tcpAccountService: ClientProxy,
+    @Inject(CLIENT_RPC_PACKAGE_NAME) private readonly clientClient: ClientGrpc,
+    @Inject(ACCOUNT_RPC_PACKAGE_NAME)
+    private readonly accountClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.clientRpcService = this.clientClient.getService<ClientRpcService>(
+      CLIENT_RPC_SERVICE_NAME,
+    );
+    this.accountRpcService = this.accountClient.getService<AccountRpcService>(
+      ACCOUNT_RPC_SERVICE_NAME,
+    );
+  }
 
   @Get(':id')
   @ApiOperation({
@@ -40,7 +62,7 @@ export class ClientController {
   })
   @ApiOkResponse({ type: ResponseClientDto })
   getById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpClientService.send({ cmd: 'get-client' }, id);
+    return this.clientRpcService.get({ id });
   }
 
   @Get(':id/transactions')
@@ -67,7 +89,7 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseAccountDto] })
   getAccounts(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpAccountService.send({ cmd: 'get-client-accounts' }, id);
+    return this.accountRpcService.getClientAccounts({ id });
   }
 
   @Post('search')
@@ -77,7 +99,7 @@ export class ClientController {
   })
   @ApiOkResponse({ type: [ResponseClientDto] })
   find() {
-    return this.tcpClientService.send({ cmd: 'find-clients' }, '');
+    return this.clientRpcService.find({});
   }
 
   @Post('create')
@@ -87,10 +109,7 @@ export class ClientController {
   })
   @ApiBody({ type: CreateClientDto })
   create(@Body(ValidationPipe) createClientDto: CreateClientDto) {
-    return this.tcpClientService.send(
-      { cmd: 'create-client' },
-      createClientDto,
-    );
+    return this.clientRpcService.create(createClientDto);
   }
 
   @Delete(':id')
@@ -103,6 +122,6 @@ export class ClientController {
     description: 'the string representation of the target client UUID',
   })
   delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tcpClientService.send({ cmd: 'delete-client' }, id);
+    return this.clientRpcService.delete({ id });
   }
 }

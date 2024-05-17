@@ -9,13 +9,13 @@ export class ResponseBankDto implements Bank {
     description:
       'how much money in % is the commission for entity accounts when sending transaction to account of another bank',
   })
-  entityComission: number;
+  entityCommission: number;
 
   @ApiProperty({
     description:
       'how much money in % is the commission for individual accounts when sending transaction to account of another bank',
   })
-  individualComission: number;
+  individualCommission: number;
 
   @ApiProperty({
     description: 'name of the bank',

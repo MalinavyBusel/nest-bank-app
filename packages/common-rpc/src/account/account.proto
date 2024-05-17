@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package account;
+
+service AccountService {
+  rpc get (AccountId) returns (getAccountResponse) {}
+  rpc create (createAccountRequest) returns (AccountId) {}
+  rpc find (RpcEmpty) returns (AccountList) {}
+  rpc update (updateAccountRequest) returns (recordsAffected) {}
+  rpc delete (AccountId) returns (recordsAffected) {}
+  rpc getClientAccounts (ClientId) returns (AccountList) {}
+}
+
+message AccountId {
+  string id = 1;
+}
+
+message ClientId {
+  string id = 1;
+}
+
+message RpcEmpty {}
+
+enum currencyTypes {
+  USD = 0;
+  EUR = 1;
+  RUB = 2;
+}
+
+message recordsAffected {
+  int32 affected = 1;
+}
+
+message Account {
+  string id = 1;
+  string clientId = 2;
+  string bankId = 3;
+  double amount = 4;
+  currencyTypes currency = 5;
+}
+
+message createAccountRequest {
+  string clientId = 1;
+  string bankId = 2;
+  double amount = 3;
+  currencyTypes currency = 4;
+}
+
+message updateAccountRequest {
+  string id = 1;
+  double amount = 2;
+}
+
+message getAccountResponse {
+  optional Account account = 1;
+}
+
+message AccountList {
+  repeated Account accounts = 1;
+}

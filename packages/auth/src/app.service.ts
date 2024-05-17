@@ -5,6 +5,7 @@ import { ClientEntity } from 'common-model';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { compareSync } from 'bcrypt';
+import { status } from 'grpc';
 
 @Injectable()
 export class AppService {
@@ -19,9 +20,16 @@ export class AppService {
       where: { email: data.email },
       select: ['password', 'id', 'type'],
     });
-    if (!client) throw new RpcException('Client does not exist');
+    if (!client)
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: 'Client does not exist',
+      });
     if (!compareSync(data.password, client.password))
-      throw new RpcException('Passwords dont match');
+      throw new RpcException({
+        code: status.UNAUTHENTICATED,
+        message: 'Passwords dont match',
+      });
 
     const payload = { sub: client.id, type: client.type };
     return {

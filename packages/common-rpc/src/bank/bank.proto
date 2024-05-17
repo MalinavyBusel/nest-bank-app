@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package bank;
+
+service BankService {
+  rpc get (BankId) returns (getBankResponse) {}
+  rpc create (createBankRequest) returns (BankId) {}
+  rpc find (RpcEmpty) returns (BankList) {}
+  rpc update (Bank) returns (recordsAffected) {}
+  rpc delete (BankId) returns (recordsAffected) {}
+}
+
+message RpcEmpty {}
+
+message createBankRequest {
+  string name = 1;
+  int32 entityCommission = 2;
+  int32 individualCommission = 3;
+}
+
+message getBankResponse {
+  optional Bank bank = 1;
+}
+
+message BankId {
+  string id = 1;
+}
+
+message recordsAffected {
+  int32 affected = 1;
+}
+
+message Bank {
+  string id = 1;
+  string name = 2;
+  int32 entityCommission = 3;
+  int32 individualCommission = 4;
+}
+
+message BankList {
+  repeated Bank banks = 1;
+}

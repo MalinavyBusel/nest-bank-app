@@ -9,9 +9,11 @@ import {
   Inject,
   ParseUUIDPipe,
   ValidationPipe,
+  Req,
 } from '@nestjs/common';
 import { CreateAccountDto, ResponseAccountDto, UpdateAccountDto } from './dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -24,8 +26,11 @@ import {
   ACCOUNT_RPC_SERVICE_NAME,
   AccountRpcService,
 } from 'common-rpc';
+import { IdExtractorService } from '../../common/id-extractor/id-extractor.service';
+import { Request } from 'express';
 
 @ApiTags('Account API')
+@ApiBearerAuth()
 @Controller('account')
 export class AccountController {
   private accountRpcService: AccountRpcService;
@@ -33,6 +38,7 @@ export class AccountController {
   constructor(
     @Inject(ACCOUNT_RPC_PACKAGE_NAME)
     private readonly client: ClientGrpc,
+    private readonly idExtractorService: IdExtractorService,
   ) {}
 
   onModuleInit() {
@@ -51,8 +57,12 @@ export class AccountController {
     description: 'the string representation of the target account UUID',
   })
   @ApiOkResponse({ type: ResponseAccountDto })
-  getById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accountRpcService.get({ id });
+  async getById(
+    @Param('id', ParseUUIDPipe) accId: string,
+    @Req() request: Request,
+  ) {
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+    return this.accountRpcService.get({ payload, data: { id: accId } });
   }
 
   @Post('search')
@@ -72,8 +82,16 @@ export class AccountController {
   })
   @ApiBody({ type: CreateAccountDto })
   @ApiOkResponse({ type: String })
-  create(@Body(ValidationPipe) createAccountDto: CreateAccountDto) {
-    return this.accountRpcService.create(createAccountDto);
+  create(
+    @Body(ValidationPipe) createAccountDto: CreateAccountDto,
+    @Req() request: Request,
+  ) {
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
+    return this.accountRpcService.create({
+      payload,
+      data: { ...createAccountDto },
+    });
   }
 
   @Patch(':id')
@@ -102,7 +120,9 @@ export class AccountController {
     name: 'id',
     description: 'the string representation of the target account UUID',
   })
-  delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accountRpcService.delete({ id });
+  delete(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
+    const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
+    return this.accountRpcService.delete({ data: { id }, payload });
   }
 }

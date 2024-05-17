@@ -9,13 +9,19 @@ export class AppController implements AccountRpcService {
   constructor(private readonly appService: AppService) {}
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'get')
-  async getById(accountId: { id: string }): Promise<Account> {
-    return this.appService.getById(accountId.id);
+  async get(getRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<{ account: Account | null }> {
+    return { account: await this.appService.getById(getRequest) };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'create')
-  async create(data: Omit<Account, 'id'>): Promise<{ id: string }> {
-    const id = await this.appService.create(data);
+  async create(createRequest: {
+    payload: { clientId: string };
+    data: Omit<Account, 'id' | 'clientId'>;
+  }): Promise<{ id: string }> {
+    const id = await this.appService.create(createRequest);
     return { id };
   }
 
@@ -35,16 +41,19 @@ export class AppController implements AccountRpcService {
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'delete')
-  async delete(accountId: { id: string }): Promise<{ affected: number }> {
-    const affected = await this.appService.delete(accountId.id);
+  async delete(deleteRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<{ affected: number }> {
+    const affected = await this.appService.delete(deleteRequest);
     return { affected };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'getClientAccounts')
-  async getClientAccounts(clientId: {
-    id: string;
+  async getClientAccounts(payload: {
+    clientId: string;
   }): Promise<{ accounts: Account[] }> {
-    const accounts = await this.appService.getClientAccounts(clientId.id);
+    const accounts = await this.appService.getClientAccounts(payload);
     return { accounts };
   }
 }

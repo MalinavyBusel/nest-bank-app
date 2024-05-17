@@ -5,9 +5,10 @@ import { AccountController } from './account/account.controller';
 import { TransactionController } from './transaction/transaction.controller';
 import { ClientProxyFactory } from '@nestjs/microservices';
 import { AuthController } from './auth/auth.controller';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../common/auth.guard';
+import { IdExtractorService } from '../common/id-extractor/id-extractor.service';
 import {
   BANK_RPC_PACKAGE_NAME,
   bankRpcOptions,
@@ -20,16 +21,18 @@ import {
   TRANSACTION_RPC_PACKAGE_NAME,
   transactionRpcOptions,
 } from 'common-rpc';
+import * as process from 'node:process';
+import { GrpcExceptionFilter } from '../common/exception.filter';
 
 const jwtFactory = {
-  useFactory: async (configService: ConfigService) => ({
-    secret: configService.get('JWT_SECRET'),
+  imports: [ConfigModule.forRoot()],
+  inject: [],
+  useFactory: async () => ({
+    secret: process.env.JWT_SECRET,
     signOptions: {
       expiresIn: '24h',
     },
   }),
-  imports: [ConfigModule],
-  inject: [ConfigService],
 };
 
 @Module({
@@ -45,6 +48,10 @@ const jwtFactory = {
     {
       provide: 'APP_GUARD',
       useClass: AuthGuard,
+    },
+    {
+      provide: 'APP_FILTER',
+      useClass: GrpcExceptionFilter,
     },
     {
       provide: BANK_RPC_PACKAGE_NAME,
@@ -76,6 +83,7 @@ const jwtFactory = {
         return ClientProxyFactory.create(transactionRpcOptions());
       },
     },
+    IdExtractorService,
   ],
 })
 export class ControllerModule {}

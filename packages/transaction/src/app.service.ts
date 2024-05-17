@@ -10,6 +10,8 @@ import {
 } from 'common-model';
 import { DataSource, Repository } from 'typeorm';
 import { convertCurrency } from './helpers/currency.converter';
+import { RpcException } from '@nestjs/microservices';
+import { status } from 'grpc';
 
 @Injectable()
 export class AppService {
@@ -25,66 +27,96 @@ export class AppService {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async getById(id: string): Promise<Transaction | null> {
-    return this.transactionRepository.findOneBy({ id });
-  }
-
-  async getClientTransactions(data: {
-    clientId: string;
-    startDate: string;
-    endDate: string;
+  async getClientTransactions(dto: {
+    data: {
+      startDate?: string;
+      endDate?: string;
+      skip?: number;
+      take?: number;
+    };
+    payload: { clientId: string };
   }): Promise<Transaction[]> {
-    let { startDate, endDate } = data;
-    const { clientId } = data;
-    if (startDate === undefined) {
-      startDate = new Date(0).toISOString();
-    }
-    if (endDate === undefined) {
-      endDate = new Date().toISOString();
-    }
+    const { startDate, endDate, skip, take } = dto.data;
+    const { clientId } = dto.payload;
 
-    return await this.transactionRepository
+    return this.transactionRepository
       .createQueryBuilder('transaction')
-      .leftJoin('transaction.from', 'account')
-      .where('account.clientId = :clientId', { clientId })
-      .andWhere('datetime between :startDate and :endDate', {
-        startDate,
-        endDate,
+      .where((qb) => {
+        const subq = qb
+          .subQuery()
+          .select('id')
+          .from(AccountEntity, 'acc')
+          .where('acc.clientId = :clientId', { clientId })
+          .getQuery();
+        return 'transaction.fromId IN ' + subq;
       })
+      .andWhere(
+        '(cast(:startDate as date) is null OR :startDate <= transaction.datetime)',
+        { startDate },
+      )
+      .andWhere(
+        '(cast(:endDate as date) is null OR :endDate >= transaction.datetime)',
+        { endDate },
+      )
+      .skip(skip)
+      .take(take)
       .getMany();
   }
 
-  async create(data: Omit<Transaction, 'id' | 'datetime'>): Promise<string> {
-    const fromAcc = await this.accountRepository.findOneByOrFail({
-      id: data.fromId,
-    });
-    const toAcc = await this.accountRepository.findOneByOrFail({
-      id: data.toId,
-    });
-    const fromBank = await this.bankRepository.findOneByOrFail({
-      id: fromAcc.bankId,
-    });
-    const fromClient = await this.clientRepository.findOneByOrFail({
-      id: fromAcc.clientId,
-    });
+  async create(createRequest: {
+    data: Omit<Transaction, 'id' | 'datetime'>;
+    payload: { clientId: string };
+  }): Promise<{ id: string }> {
+    const [fromAcc, toAcc]: [AccountEntity, AccountEntity] = await Promise.all([
+      this.accountRepository.findOneByOrFail({
+        id: createRequest.data.fromId,
+      }),
+      this.accountRepository.findOneByOrFail({
+        id: createRequest.data.toId,
+      }),
+    ]);
+    const [fromBank, fromClient]: [BankEntity, ClientEntity] =
+      await Promise.all([
+        this.bankRepository.findOneByOrFail({
+          id: fromAcc.bankId,
+        }),
+        this.clientRepository.findOneByOrFail({
+          id: fromAcc.clientId,
+        }),
+      ]);
 
     const amountWithCommission = this.calculateAmountWithCommission(
       fromBank,
       toAcc.bankId,
       fromClient,
-      data.amount,
+      createRequest.data.amount,
     );
     if (amountWithCommission > fromAcc.amount) {
-      return 'not enough money';
+      throw new RpcException({
+        code: status.FAILED_PRECONDITION,
+        message: 'Not enough money',
+      });
+    }
+    if (fromAcc.clientId !== createRequest.payload.clientId) {
+      throw new RpcException({
+        code: status.PERMISSION_DENIED,
+        message:
+          'Only the owner of account can transact money from this account',
+      });
     }
     fromAcc.amount -= amountWithCommission;
     const converted = await convertCurrency(
       fromAcc.currency,
       toAcc.currency,
-      data.amount,
+      createRequest.data.amount,
     );
     toAcc.amount += converted;
-    return this.runDatabaseTransaction(fromAcc, toAcc, data);
+    const id = await this.runDatabaseTransaction(
+      fromAcc,
+      toAcc,
+      createRequest.data,
+    );
+    return { id };
   }
 
   private calculateAmountWithCommission(
@@ -97,13 +129,11 @@ export class AppService {
       return amount;
     }
 
-    let commission = 0;
     if (client.type === clientTypesEnum.INDIVIDUAL) {
-      commission = bank.individualCommission;
+      return amount * ((100 + bank.individualCommission) / 100);
     } else {
-      commission = bank.entityCommission;
+      return amount * ((100 + bank.entityCommission) / 100);
     }
-    return amount * ((100 + commission) / 100);
   }
 
   private async runDatabaseTransaction(
@@ -124,7 +154,6 @@ export class AppService {
       await queryRunner.commitTransaction();
       return transaction.id;
     } catch (err) {
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return `transaction failed: ${err.message}`;
     } finally {

@@ -1,17 +1,25 @@
 import { Account } from 'common-model';
 import { BaseRpcService, RpcEmpty } from '../base';
-import { Observable } from 'rxjs';
 
 export interface AccountRpcService extends BaseRpcService {
-  get(accountId: { id: string }): Observable<{ account: Account | null }>;
-  create(data: Omit<Account, 'id'>): Observable<{ id: string }>;
-  find(filter: RpcEmpty): Observable<{ accounts: Account[] }>;
-  update(data: {
+  get(getRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<{ account: Account | null }>;
+  create(createRequest: {
+    payload: { clientId: string };
+    data: Omit<Account, 'id' | 'clientId'>;
+  }): Promise<{ id: string }>;
+  find(filter: RpcEmpty): Promise<{ accounts: Account[] }>;
+  update(updateRequest: {
     id: string;
     amount: number;
-  }): Observable<{ affected: number }>;
-  delete(accountId: { id: string }): Observable<{ affected: number }>;
-  getClientAccounts(clientId: {
-    id: string;
-  }): Observable<{ accounts: Account[] }>;
+  }): Promise<{ affected: number }>;
+  delete(deleteRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<{ affected: number }>;
+  getClientAccounts(payload: {
+    clientId: string;
+  }): Promise<{ accounts: Account[] }>;
 }

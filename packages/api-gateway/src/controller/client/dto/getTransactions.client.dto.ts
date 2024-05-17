@@ -8,4 +8,10 @@ export class GetTransactionsDto {
   @IsDateString()
   @IsOptional()
   endDate: string;
+
+  @IsOptional()
+  take: number;
+
+  @IsOptional()
+  skip: number;
 }

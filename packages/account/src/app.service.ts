@@ -10,15 +10,27 @@ export class AppService {
     private readonly accountRepository: Repository<AccountEntity>,
   ) {}
 
-  async getById(id: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({ id });
+  async getById(getRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<Account | null> {
+    return this.accountRepository.findOneBy({
+      id: getRequest.data.id,
+      clientId: getRequest.payload.clientId,
+    });
   }
 
-  async create(data: Omit<Account, 'id'>): Promise<string> {
+  async create(createRequest: {
+    payload: { clientId: string };
+    data: Omit<Account, 'id' | 'clientId'>;
+  }): Promise<string> {
     const insertResult = await this.accountRepository
       .createQueryBuilder()
       .insert()
-      .values(data)
+      .values({
+        clientId: createRequest.payload.clientId,
+        ...createRequest.data,
+      })
       .returning('id')
       .execute();
     return insertResult.raw[0]['id'];
@@ -30,8 +42,6 @@ export class AppService {
 
   async update(data: { id: string; amount: number }): Promise<number> {
     const { id, amount } = data;
-    // TODO
-    // do smth with update logic
     const updateResult = await this.accountRepository.update(
       { id },
       { amount },
@@ -39,12 +49,18 @@ export class AppService {
     return updateResult.affected;
   }
 
-  async delete(id: string): Promise<number> {
-    const deleteResult = await this.accountRepository.delete({ id });
+  async delete(deleteRequest: {
+    payload: { clientId: string };
+    data: { id: string };
+  }): Promise<number> {
+    const deleteResult = await this.accountRepository.delete({
+      id: deleteRequest.data.id,
+      clientId: deleteRequest.payload.clientId,
+    });
     return deleteResult.affected ?? 0;
   }
 
-  getClientAccounts(id: string) {
-    return this.accountRepository.findBy({ clientId: id });
+  getClientAccounts(payload: { clientId: string }) {
+    return this.accountRepository.findBy({ clientId: payload.clientId });
   }
 }

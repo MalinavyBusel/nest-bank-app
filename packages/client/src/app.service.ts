@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Client, ClientEntity } from 'common-model';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class AppService {
@@ -19,6 +20,7 @@ export class AppService {
   }
 
   async create(data: Omit<Client, 'id'>): Promise<string> {
+    data.password = await hash(data.password);
     const instance = this.clientRepository.create(data);
     const record = await this.clientRepository.save(instance);
     return record.id;

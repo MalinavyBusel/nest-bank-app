@@ -11,7 +11,19 @@ export class AppController implements AuthRpcService {
   async login(loginDto: {
     email: string;
     password: string;
-  }): Promise<{ accessToken: string }> {
+  }): Promise<{ accessToken: string; refreshToken: string }> {
     return this.appService.login(loginDto);
+  }
+
+  @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'logout')
+  logout(data: { id: string }): Promise<void> {
+    return this.appService.logout(data);
+  }
+
+  @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'refresh')
+  refresh(data: {
+    refreshToken: string;
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    return this.appService.refresh(data);
   }
 }

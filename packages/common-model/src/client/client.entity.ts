@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { clientTypesEnum } from './client.interface';
-import { hash } from 'bcrypt';
 
 @Entity('client')
 export class ClientEntity {
@@ -19,8 +18,6 @@ export class ClientEntity {
   @Column({ select: false })
   public password: string;
 
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await hash(this.password, 10);
-  }
+  @Column({ select: false, nullable: true })
+  public refreshToken: string;
 }

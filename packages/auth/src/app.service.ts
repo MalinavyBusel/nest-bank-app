@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ClientEntity } from 'common-model';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { compareSync } from 'bcrypt';
+import { compareSync, hash, compare } from 'bcrypt';
 import { status } from 'grpc';
 
 @Injectable()
@@ -15,7 +15,10 @@ export class AppService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
 
-  public async login(data: { email: string; password: string }) {
+  public async login(data: { email: string; password: string }): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
     const client = await this.clientRepository.findOne({
       where: { email: data.email },
       select: ['password', 'id', 'type'],
@@ -31,9 +34,53 @@ export class AppService {
         message: 'Passwords dont match',
       });
 
+    return this.generateTokens(client);
+  }
+
+  public async refresh(data: { refreshToken: string }): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    let payload;
+    try {
+      payload = await this.jwtService.verifyAsync(data.refreshToken);
+    } catch (error) {
+      throw new RpcException({
+        code: status.UNAUTHENTICATED,
+        message: 'Invalid token',
+      });
+    }
+    const client = await this.clientRepository.findOne({
+      where: { id: payload.sub },
+      select: ['refreshToken', 'id', 'type'],
+    });
+    if (data.refreshToken != client.refreshToken) {
+      throw new RpcException({
+        code: status.UNAUTHENTICATED,
+        message: 'Invalid token',
+      });
+    }
+
+    return this.generateTokens(client);
+  }
+
+  public async logout(data: { id: string }): Promise<void> {
+    await this.clientRepository.update({ id: data.id }, { refreshToken: null });
+  }
+
+  private async generateTokens(client: ClientEntity) {
+    const refreshToken = await this.jwtService.signAsync(
+      { sub: client.id },
+      { expiresIn: '60d' },
+    );
+    await this.clientRepository.update({ id: client.id }, { refreshToken });
+
     const payload = { sub: client.id, type: client.type };
     return {
-      accessToken: await this.jwtService.signAsync(payload),
+      accessToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '15m',
+      }),
+      refreshToken,
     };
   }
 }

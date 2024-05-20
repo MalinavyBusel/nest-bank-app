@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ClientEntity } from 'common-model';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { compareSync, hash, compare } from 'bcrypt';
 import { status } from 'grpc';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class AppService {
@@ -28,11 +28,15 @@ export class AppService {
         code: status.NOT_FOUND,
         message: 'Client does not exist',
       });
-    if (!compareSync(data.password, client.password))
+    if (
+      createHash('sha256').update(data.password).digest('base64') !==
+      client.password
+    ) {
       throw new RpcException({
         code: status.UNAUTHENTICATED,
         message: 'Passwords dont match',
       });
+    }
 
     return this.generateTokens(client);
   }
@@ -54,7 +58,11 @@ export class AppService {
       where: { id: payload.sub },
       select: ['refreshToken', 'id', 'type'],
     });
-    if (data.refreshToken != client.refreshToken) {
+    if (
+      client == null ||
+      createHash('sha256').update(data.refreshToken).digest('base64') !==
+        client.refreshToken
+    ) {
       throw new RpcException({
         code: status.UNAUTHENTICATED,
         message: 'Invalid token',
@@ -73,7 +81,13 @@ export class AppService {
       { sub: client.id },
       { expiresIn: '60d' },
     );
-    await this.clientRepository.update({ id: client.id }, { refreshToken });
+    const hashedToken = createHash('sha256')
+      .update(refreshToken)
+      .digest('base64');
+    await this.clientRepository.update(
+      { id: client.id },
+      { refreshToken: hashedToken },
+    );
 
     const payload = { sub: client.id, type: client.type };
     return {

@@ -1,26 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { clientTypesEnum } from './client.interface';
-import { hash } from 'bcrypt';
 
 @Entity('client')
 export class ClientEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column()
+  @Column({ length: 100 })
   public name: string;
 
-  @Column({ type: 'enum', enum: clientTypesEnum })
+  @Column({ type: 'enum', enum: clientTypesEnum, enumName: 'client_type_enum' })
   public type: clientTypesEnum;
 
-  @Column()
+  @Column({ unique: true, length: 100 })
   public email: string;
 
-  @Column({ select: false })
+  @Column({ select: false, length: 44 })
   public password: string;
 
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await hash(this.password, 10);
-  }
+  @Column({ select: false, nullable: true, length: 44 })
+  public refreshToken: string;
 }

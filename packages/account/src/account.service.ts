@@ -4,7 +4,7 @@ import { AccountEntity, Account } from 'common-model';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class AppService {
+export class AccountService {
   constructor(
     @InjectRepository(AccountEntity)
     private readonly accountRepository: Repository<AccountEntity>,
@@ -33,11 +33,8 @@ export class AppService {
       })
       .returning('id')
       .execute();
-    return insertResult.raw[0]['id'];
-  }
 
-  async find(_filter: any): Promise<Account[]> {
-    return this.accountRepository.find();
+    return insertResult.raw[0]['id'];
   }
 
   async update(data: { id: string; amount: number }): Promise<number> {
@@ -46,6 +43,7 @@ export class AppService {
       { id },
       { amount },
     );
+
     return updateResult.affected;
   }
 
@@ -57,6 +55,7 @@ export class AppService {
       id: deleteRequest.data.id,
       clientId: deleteRequest.payload.clientId,
     });
+
     return deleteResult.affected ?? 0;
   }
 

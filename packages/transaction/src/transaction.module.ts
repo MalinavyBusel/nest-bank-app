@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TransactionController } from './transaction.controller';
+import { TransactionService } from './transaction.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  AccountEntity,
+  BankEntity,
+  ClientEntity,
+  TransactionEntity,
+} from 'common-model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
 
 @Module({
   imports: [
@@ -18,13 +23,18 @@ import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [ClientEntity, AccountEntity, BankEntity],
+        entities: [ClientEntity, AccountEntity, BankEntity, TransactionEntity],
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([ClientEntity]),
+    TypeOrmModule.forFeature([
+      TransactionEntity,
+      AccountEntity,
+      BankEntity,
+      ClientEntity,
+    ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [TransactionController],
+  providers: [TransactionService],
 })
-export class AppModule {}
+export class TransactionModule {}

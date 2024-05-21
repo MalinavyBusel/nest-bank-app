@@ -77,6 +77,7 @@ export class ClientController {
   @ApiOkResponse({ type: ResponseClientDto })
   getById(@Req() request: Request) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
     return this.clientRpcService.get({ id: payload.clientId });
   }
 
@@ -112,6 +113,7 @@ export class ClientController {
     @Req() request: Request,
   ) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
     return this.transactionRpcService.getClientTransactions({
       payload,
       data: {
@@ -123,11 +125,6 @@ export class ClientController {
     });
   }
 
-  // @Get(':id/accounts')
-  // @ApiParam({
-  //   name: 'id',
-  //   description: 'the string representation of the target client UUID',
-  // })
   @Get('accounts')
   @ApiOperation({
     summary: 'Returns all clients accounts',
@@ -136,17 +133,8 @@ export class ClientController {
   @ApiOkResponse({ type: [ResponseAccountDto] })
   getAccounts(@Req() request: Request) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
-    return this.accountRpcService.getClientAccounts(payload);
-  }
 
-  @Post('search')
-  @ApiOperation({
-    summary: 'Returns all clients filtered by condition',
-    description: 'Returns all clients filtered by condition',
-  })
-  @ApiOkResponse({ type: [ResponseClientDto] })
-  find() {
-    return this.clientRpcService.find({});
+    return this.accountRpcService.getClientAccounts(payload);
   }
 
   @Public()
@@ -167,6 +155,7 @@ export class ClientController {
   })
   delete(@Req() request: Request) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
     return this.clientRpcService.delete({ id: payload.clientId });
   }
 }

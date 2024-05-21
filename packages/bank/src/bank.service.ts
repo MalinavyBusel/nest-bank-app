@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class AppService {
+export class BankService {
   constructor(
     @InjectRepository(BankEntity)
     private readonly bankRepository: Repository<BankEntity>,
@@ -14,10 +14,6 @@ export class AppService {
     return this.bankRepository.findOneBy({ id });
   }
 
-  async find(_filter: any): Promise<Bank[]> {
-    return this.bankRepository.find();
-  }
-
   async create(data: Omit<Bank, 'id'>): Promise<string> {
     const insertResult = await this.bankRepository
       .createQueryBuilder()
@@ -25,6 +21,7 @@ export class AppService {
       .values(data)
       .returning('id')
       .execute();
+
     return insertResult.raw[0]['id'];
   }
 
@@ -38,6 +35,7 @@ export class AppService {
 
   async delete(id: string): Promise<number> {
     const deleteResult = await this.bankRepository.delete({ id });
+
     return deleteResult.affected ?? 0;
   }
 }

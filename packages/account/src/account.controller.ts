@@ -1,19 +1,19 @@
 import { Controller } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AccountService } from './account.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { Account } from 'common-model';
 import { ACCOUNT_RPC_SERVICE_NAME, AccountRpcService } from 'common-rpc';
 
 @Controller()
-export class AppController implements AccountRpcService {
-  constructor(private readonly appService: AppService) {}
+export class AccountController implements AccountRpcService {
+  constructor(private readonly accountService: AccountService) {}
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'get')
   async get(getRequest: {
     payload: { clientId: string };
     data: { id: string };
   }): Promise<{ account: Account | null }> {
-    return { account: await this.appService.getById(getRequest) };
+    return { account: await this.accountService.getById(getRequest) };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'create')
@@ -21,14 +21,9 @@ export class AppController implements AccountRpcService {
     payload: { clientId: string };
     data: Omit<Account, 'id' | 'clientId'>;
   }): Promise<{ id: string }> {
-    const id = await this.appService.create(createRequest);
-    return { id };
-  }
+    const id = await this.accountService.create(createRequest);
 
-  @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'find')
-  async find(filter: Record<string, never>): Promise<{ accounts: Account[] }> {
-    const accounts = await this.appService.find(filter);
-    return { accounts };
+    return { id };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'update')
@@ -36,7 +31,8 @@ export class AppController implements AccountRpcService {
     id: string;
     amount: number;
   }): Promise<{ affected: number }> {
-    const affected = await this.appService.update(data);
+    const affected = await this.accountService.update(data);
+
     return { affected };
   }
 
@@ -45,7 +41,8 @@ export class AppController implements AccountRpcService {
     payload: { clientId: string };
     data: { id: string };
   }): Promise<{ affected: number }> {
-    const affected = await this.appService.delete(deleteRequest);
+    const affected = await this.accountService.delete(deleteRequest);
+
     return { affected };
   }
 
@@ -53,7 +50,8 @@ export class AppController implements AccountRpcService {
   async getClientAccounts(payload: {
     clientId: string;
   }): Promise<{ accounts: Account[] }> {
-    const accounts = await this.appService.getClientAccounts(payload);
+    const accounts = await this.accountService.getClientAccounts(payload);
+
     return { accounts };
   }
 }

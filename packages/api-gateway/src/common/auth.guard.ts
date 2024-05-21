@@ -20,8 +20,11 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.get(IS_PUBLIC_KEY, context.getHandler());
-    if (isPublic) {
+    const isPublicEndpoint = this.reflector.get(
+      IS_PUBLIC_KEY,
+      context.getHandler(),
+    );
+    if (isPublicEndpoint) {
       return true;
     }
 
@@ -41,6 +44,7 @@ export class AuthGuard implements CanActivate {
 
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
+
     return type === 'Bearer' ? token : undefined;
   }
 }

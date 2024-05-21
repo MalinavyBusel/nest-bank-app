@@ -62,17 +62,8 @@ export class AccountController {
     @Req() request: Request,
   ) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
-    return this.accountRpcService.get({ payload, data: { id: accId } });
-  }
 
-  @Post('search')
-  @ApiOperation({
-    summary: 'Returns all accounts filtered by condition',
-    description: 'Returns all accounts filtered by condition',
-  })
-  @ApiOkResponse({ type: [ResponseAccountDto] })
-  find() {
-    return this.accountRpcService.find({});
+    return this.accountRpcService.get({ payload, data: { id: accId } });
   }
 
   @Post('create')

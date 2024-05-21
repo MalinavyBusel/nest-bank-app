@@ -59,16 +59,6 @@ export class BankController {
     return await this.bankRpcService.get({ id });
   }
 
-  @Post('search')
-  @ApiOperation({
-    summary: 'Returns all banks filtered by condition',
-    description: 'Returns all banks filtered by condition',
-  })
-  @ApiOkResponse({ type: [ResponseBankDto] })
-  async find(): Promise<{ banks: Bank[] }> {
-    return await this.bankRpcService.find({});
-  }
-
   @Post('create')
   @ApiOperation({
     summary: 'Creates new bank',

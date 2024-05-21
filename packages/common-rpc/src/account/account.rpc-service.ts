@@ -1,5 +1,5 @@
 import { Account } from 'common-model';
-import { BaseRpcService, RpcEmpty } from '../base';
+import { BaseRpcService } from '../base';
 
 export interface AccountRpcService extends BaseRpcService {
   get(getRequest: {
@@ -10,7 +10,6 @@ export interface AccountRpcService extends BaseRpcService {
     payload: { clientId: string };
     data: Omit<Account, 'id' | 'clientId'>;
   }): Promise<{ id: string }>;
-  find(filter: RpcEmpty): Promise<{ accounts: Account[] }>;
   update(updateRequest: {
     id: string;
     amount: number;

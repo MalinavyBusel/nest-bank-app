@@ -46,10 +46,11 @@ export class TransactionController {
     @Req() request: Request,
   ) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
-    const a = this.transactionRpcService.create({
+    const transaction = this.transactionRpcService.create({
       data: createTransactionDto,
       payload,
     });
-    return a as unknown as Observable<any>;
+
+    return transaction as unknown as Observable<any>;
   }
 }

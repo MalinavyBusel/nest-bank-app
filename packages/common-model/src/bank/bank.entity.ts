@@ -5,12 +5,12 @@ export class BankEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column()
+  @Column({ length: 100 })
   public name: string;
 
-  @Column()
+  @Column({ type: 'int2' })
   public entityCommission: number;
 
-  @Column()
+  @Column({ type: 'int2' })
   public individualCommission: number;
 }

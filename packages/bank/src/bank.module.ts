@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { BankController } from './bank.controller';
+import { BankService } from './bank.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
+import { BankEntity } from 'common-model';
 
 @Module({
   imports: [
@@ -18,13 +18,13 @@ import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [AccountEntity, ClientEntity, BankEntity],
+        entities: [BankEntity],
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([AccountEntity]),
+    TypeOrmModule.forFeature([BankEntity]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [BankController],
+  providers: [BankService],
 })
-export class AppModule {}
+export class BankModule {}

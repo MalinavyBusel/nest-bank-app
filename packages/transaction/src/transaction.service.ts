@@ -12,9 +12,10 @@ import { DataSource, Repository } from 'typeorm';
 import { convertCurrency } from './helpers/currency.converter';
 import { RpcException } from '@nestjs/microservices';
 import { status } from 'grpc';
+import { TransactionFilter } from 'common-rpc';
 
 @Injectable()
-export class AppService {
+export class TransactionService {
   constructor(
     @InjectRepository(TransactionEntity)
     private readonly transactionRepository: Repository<TransactionEntity>,
@@ -28,18 +29,13 @@ export class AppService {
   ) {}
 
   async getClientTransactions(dto: {
-    data: {
-      startDate?: string;
-      endDate?: string;
-      skip?: number;
-      take?: number;
-    };
+    data: TransactionFilter;
     payload: { clientId: string };
   }): Promise<Transaction[]> {
     const { startDate, endDate, skip, take } = dto.data;
     const { clientId } = dto.payload;
 
-    return this.transactionRepository
+    const query = this.transactionRepository
       .createQueryBuilder('transaction')
       .where((qb) => {
         const subq = qb
@@ -61,6 +57,8 @@ export class AppService {
       .skip(skip)
       .take(take)
       .getMany();
+
+    return query;
   }
 
   async create(createRequest: {
@@ -104,18 +102,22 @@ export class AppService {
           'Only the owner of account can transact money from this account',
       });
     }
-    fromAcc.amount -= amountWithCommission;
+
+    const fromAccUpdated = structuredClone(fromAcc);
+    const toAccUpdated = structuredClone(toAcc);
+    fromAccUpdated.amount -= amountWithCommission;
     const converted = await convertCurrency(
-      fromAcc.currency,
-      toAcc.currency,
+      fromAccUpdated.currency,
+      toAccUpdated.currency,
       createRequest.data.amount,
     );
-    toAcc.amount += converted;
+    toAccUpdated.amount += converted;
     const id = await this.runDatabaseTransaction(
-      fromAcc,
-      toAcc,
+      fromAccUpdated,
+      toAccUpdated,
       createRequest.data,
     );
+
     return { id };
   }
 
@@ -151,6 +153,7 @@ export class AppService {
         Omit<Transaction, 'id' | 'datetime'>
       >(TransactionEntity, data);
       await queryRunner.manager.save(transaction);
+
       await queryRunner.commitTransaction();
       return transaction.id;
     } catch (err) {

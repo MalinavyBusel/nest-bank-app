@@ -6,14 +6,15 @@ import { jwtDecode } from 'jwt-decode';
 export class IdExtractorService {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [_, token] = request.headers.authorization!.split(' ');
+
     return token;
   }
 
   public getClientIdFromAccessToken(request: Request): { clientId: string } {
     const token = this.extractTokenFromHeader(request);
-    const decoded = jwtDecode<Payload>(token);
+    const tokenPayload = jwtDecode<Payload>(token);
 
-    return { clientId: decoded.sub };
+    return { clientId: tokenPayload.sub };
   }
 }
 

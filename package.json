@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": "~20.12.0"
+    "node": "^20.12.0"
   },
   "scripts": {
     "reinstall": "rimraf **/node_modules && yarn install",
@@ -37,8 +37,8 @@
     "lint": "yarn workspaces run lint"
   },
   "dependencies": {
-    "pm2": "^5.3.1",
-    "rimraf": "^5.0.5"
+    "pm2": "~5.3.1",
+    "rimraf": "~5.0.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

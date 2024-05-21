@@ -4,7 +4,7 @@ import { AccountEntity, Account } from 'common-model';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class AppService {
+export class AccountService {
   constructor(
     @InjectRepository(AccountEntity)
     private readonly accountRepository: Repository<AccountEntity>,

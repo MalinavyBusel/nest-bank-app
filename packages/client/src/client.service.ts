@@ -5,7 +5,7 @@ import { Client, ClientEntity } from 'common-model';
 import { createHash } from 'crypto';
 
 @Injectable()
-export class AppService {
+export class ClientService {
   constructor(
     @InjectRepository(ClientEntity)
     private readonly clientRepository: Repository<ClientEntity>,

@@ -1,22 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { JwtModule } from '@nestjs/jwt';
+import { ClientController } from './client.controller';
+import { ClientService } from './client.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClientEntity } from 'common-model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-const jwtFactory = {
-  useFactory: async (configService: ConfigService) => ({
-    secret: configService.get('JWT_SECRET'),
-  }),
-  imports: [ConfigModule],
-  inject: [ConfigService],
-};
+import { AccountEntity, BankEntity, ClientEntity } from 'common-model';
 
 @Module({
   imports: [
-    JwtModule.registerAsync(jwtFactory),
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,13 +18,13 @@ const jwtFactory = {
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [ClientEntity],
+        entities: [ClientEntity, AccountEntity, BankEntity],
         synchronize: true,
       }),
     }),
     TypeOrmModule.forFeature([ClientEntity]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [ClientController],
+  providers: [ClientService],
 })
-export class AppModule {}
+export class ClientModule {}

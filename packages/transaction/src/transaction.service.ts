@@ -15,7 +15,7 @@ import { status } from 'grpc';
 import { TransactionFilter } from 'common-rpc';
 
 @Injectable()
-export class AppService {
+export class TransactionService {
   constructor(
     @InjectRepository(TransactionEntity)
     private readonly transactionRepository: Repository<TransactionEntity>,

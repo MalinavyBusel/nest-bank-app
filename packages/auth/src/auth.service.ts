@@ -9,7 +9,7 @@ import { createHash } from 'crypto';
 import { LoginRequest, LoginResponse, RefreshRequest } from 'common-rpc';
 
 @Injectable()
-export class AppService {
+export class AuthService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(ClientEntity)

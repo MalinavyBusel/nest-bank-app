@@ -14,7 +14,11 @@ export class AccountEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column({ type: 'enum', enum: currencyTypesEnum })
+  @Column({
+    type: 'enum',
+    enum: currencyTypesEnum,
+    enumName: 'currency_name_enum',
+  })
   public currency: currencyTypesEnum;
 
   @Column({ type: 'double precision' })

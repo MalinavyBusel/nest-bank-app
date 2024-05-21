@@ -1,17 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  AccountEntity,
-  BankEntity,
-  ClientEntity,
-  TransactionEntity,
-} from 'common-model';
+import { ClientEntity } from 'common-model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+const jwtFactory = {
+  useFactory: async (configService: ConfigService) => ({
+    secret: configService.get('JWT_SECRET'),
+  }),
+  imports: [ConfigModule],
+  inject: [ConfigService],
+};
 
 @Module({
   imports: [
+    JwtModule.registerAsync(jwtFactory),
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,18 +28,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [ClientEntity, AccountEntity, BankEntity, TransactionEntity],
+        entities: [ClientEntity],
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([
-      TransactionEntity,
-      AccountEntity,
-      BankEntity,
-      ClientEntity,
-    ]),
+    TypeOrmModule.forFeature([ClientEntity]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AuthController],
+  providers: [AuthService],
 })
-export class AppModule {}
+export class AuthModule {}

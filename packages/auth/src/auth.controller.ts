@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AuthService } from './auth.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
   AUTH_RPC_SERVICE_NAME,
@@ -10,21 +10,21 @@ import {
 } from 'common-rpc';
 
 @Controller()
-export class AppController implements AuthRpcService {
-  constructor(private readonly appService: AppService) {}
+export class AuthController implements AuthRpcService {
+  constructor(private readonly authService: AuthService) {}
 
   @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'login')
   async login(loginDto: LoginRequest): Promise<LoginResponse> {
-    return this.appService.login(loginDto);
+    return this.authService.login(loginDto);
   }
 
   @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'logout')
   logout(data: { id: string }): Promise<void> {
-    return this.appService.logout(data);
+    return this.authService.logout(data);
   }
 
   @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'refresh')
   refresh(data: RefreshRequest): Promise<LoginResponse> {
-    return this.appService.refresh(data);
+    return this.authService.refresh(data);
   }
 }

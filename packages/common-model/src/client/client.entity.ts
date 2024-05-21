@@ -6,18 +6,18 @@ export class ClientEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column()
+  @Column({ length: 100 })
   public name: string;
 
-  @Column({ type: 'enum', enum: clientTypesEnum })
+  @Column({ type: 'enum', enum: clientTypesEnum, enumName: 'client_type_enum' })
   public type: clientTypesEnum;
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 100 })
   public email: string;
 
-  @Column({ select: false })
+  @Column({ select: false, length: 44 })
   public password: string;
 
-  @Column({ select: false, nullable: true })
+  @Column({ select: false, nullable: true, length: 44 })
   public refreshToken: string;
 }

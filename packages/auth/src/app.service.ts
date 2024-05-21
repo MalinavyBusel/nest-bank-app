@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { status } from 'grpc';
 import { createHash } from 'crypto';
+import { LoginRequest, LoginResponse, RefreshRequest } from 'common-rpc';
 
 @Injectable()
 export class AppService {
@@ -15,10 +16,7 @@ export class AppService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
 
-  public async login(data: { email: string; password: string }): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  public async login(data: LoginRequest): Promise<LoginResponse> {
     const client = await this.clientRepository.findOne({
       where: { email: data.email },
       select: ['password', 'id', 'type'],
@@ -41,10 +39,7 @@ export class AppService {
     return this.generateTokens(client);
   }
 
-  public async refresh(data: { refreshToken: string }): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  public async refresh(data: RefreshRequest): Promise<LoginResponse> {
     let payload;
     try {
       payload = await this.jwtService.verifyAsync(data.refreshToken);
@@ -54,6 +49,7 @@ export class AppService {
         message: 'Invalid token',
       });
     }
+
     const client = await this.clientRepository.findOne({
       where: { id: payload.sub },
       select: ['refreshToken', 'id', 'type'],
@@ -88,11 +84,11 @@ export class AppService {
       { id: client.id },
       { refreshToken: hashedToken },
     );
-
     const payload = { sub: client.id, type: client.type };
+
     return {
       accessToken: await this.jwtService.signAsync(payload, {
-        expiresIn: '15m',
+        expiresIn: '30m',
       }),
       refreshToken,
     };

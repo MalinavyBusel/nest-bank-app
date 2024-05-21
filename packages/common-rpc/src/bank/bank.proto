@@ -5,7 +5,6 @@ package bank;
 service BankService {
   rpc get (BankId) returns (getBankResponse) {}
   rpc create (createBankRequest) returns (BankId) {}
-  rpc find (RpcEmpty) returns (BankList) {}
   rpc update (Bank) returns (recordsAffected) {}
   rpc delete (BankId) returns (recordsAffected) {}
 }

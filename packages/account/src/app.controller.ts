@@ -22,13 +22,8 @@ export class AppController implements AccountRpcService {
     data: Omit<Account, 'id' | 'clientId'>;
   }): Promise<{ id: string }> {
     const id = await this.appService.create(createRequest);
-    return { id };
-  }
 
-  @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'find')
-  async find(filter: Record<string, never>): Promise<{ accounts: Account[] }> {
-    const accounts = await this.appService.find(filter);
-    return { accounts };
+    return { id };
   }
 
   @GrpcMethod(ACCOUNT_RPC_SERVICE_NAME, 'update')
@@ -37,6 +32,7 @@ export class AppController implements AccountRpcService {
     amount: number;
   }): Promise<{ affected: number }> {
     const affected = await this.appService.update(data);
+
     return { affected };
   }
 
@@ -46,6 +42,7 @@ export class AppController implements AccountRpcService {
     data: { id: string };
   }): Promise<{ affected: number }> {
     const affected = await this.appService.delete(deleteRequest);
+
     return { affected };
   }
 
@@ -54,6 +51,7 @@ export class AppController implements AccountRpcService {
     clientId: string;
   }): Promise<{ accounts: Account[] }> {
     const accounts = await this.appService.getClientAccounts(payload);
+
     return { accounts };
   }
 }

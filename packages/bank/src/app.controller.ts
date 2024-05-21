@@ -11,30 +11,28 @@ export class AppController implements BankRpcService {
   @GrpcMethod(BANK_RPC_SERVICE_NAME, 'get')
   async get(bankId: { id: string }): Promise<{ bank: Bank | null }> {
     const bank = await this.appService.getById(bankId.id);
+
     return { bank };
   }
 
   @GrpcMethod(BANK_RPC_SERVICE_NAME, 'create')
   async create(data: Omit<Bank, 'id'>): Promise<{ id: string }> {
     const id = await this.appService.create(data);
-    return { id };
-  }
 
-  @GrpcMethod(BANK_RPC_SERVICE_NAME, 'find')
-  async find(filter: Record<string, never>): Promise<{ banks: Bank[] }> {
-    const banks = await this.appService.find(filter);
-    return { banks };
+    return { id };
   }
 
   @GrpcMethod(BANK_RPC_SERVICE_NAME, 'update')
   async update(data: Bank): Promise<{ affected: number }> {
     const affected = await this.appService.update(data);
+
     return { affected };
   }
 
   @GrpcMethod(BANK_RPC_SERVICE_NAME, 'delete')
   async delete(bankId: { id: string }): Promise<{ affected: number }> {
     const affected = await this.appService.delete(bankId.id);
+
     return { affected };
   }
 }

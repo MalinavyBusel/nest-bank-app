@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Post,
   Req,
@@ -14,6 +15,7 @@ import {
   AUTH_RPC_PACKAGE_NAME,
   AUTH_RPC_SERVICE_NAME,
   AuthRpcService,
+  RefreshRequest,
 } from 'common-rpc';
 import { Observable } from 'rxjs';
 import { IdExtractorService } from '../../common/id-extractor/id-extractor.service';
@@ -44,8 +46,9 @@ export class AuthController {
   })
   @ApiBody({ type: LoginDto })
   async login(@Body(ValidationPipe) loginDto: LoginDto) {
-    const a = this.authRpcService.login(loginDto);
-    return a as unknown as Observable<any>;
+    const tokens = this.authRpcService.login(loginDto);
+
+    return tokens as unknown as Observable<any>;
   }
 
   @Public()
@@ -54,17 +57,19 @@ export class AuthController {
     description: 'Refreshes the tokens',
   })
   @ApiBody({ type: RefreshDto })
-  async refresh(@Body() data: { refreshToken: string }) {
-    const a = this.authRpcService.refresh(data);
-    return a as unknown as Observable<any>;
+  async refresh(@Body() data: RefreshRequest) {
+    const tokens = this.authRpcService.refresh(data);
+
+    return tokens as unknown as Observable<any>;
   }
 
-  @Post('logout')
+  @Get('logout')
   @ApiOperation({
     description: 'Invalidates users tokens',
   })
   async logout(@Req() request: Request) {
     const payload = this.idExtractorService.getClientIdFromAccessToken(request);
+
     return this.authRpcService.logout({ id: payload.clientId });
   }
 }

@@ -4,7 +4,6 @@ package client;
 
 service ClientService {
   rpc get (ClientId) returns (getClientResponse) {}
-  rpc find (RpcEmpty) returns (ClientList) {}
   rpc create (createClientRequest) returns (ClientId) {}
   rpc delete (ClientId) returns (recordsAffected) {}
 }

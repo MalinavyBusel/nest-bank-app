@@ -13,26 +13,21 @@ export class AppController implements ClientRpcService {
     id: string;
   }): Promise<{ client: Omit<Client, 'password'> }> {
     const client = await this.appService.getById(clientId.id);
-    return { client };
-  }
 
-  @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'find')
-  async find(
-    filter: Record<string, never>,
-  ): Promise<{ clients: Omit<Client, 'password'>[] }> {
-    const clients = await this.appService.find(filter);
-    return { clients };
+    return { client };
   }
 
   @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'create')
   async create(data: Omit<Client, 'id'>): Promise<{ id: string }> {
     const id = await this.appService.create(data);
+
     return { id };
   }
 
   @GrpcMethod(CLIENT_RPC_SERVICE_NAME, 'delete')
   async delete(clientId: { id: string }): Promise<{ affected: number }> {
     const affected = await this.appService.delete(clientId.id);
+
     return { affected };
   }
 }

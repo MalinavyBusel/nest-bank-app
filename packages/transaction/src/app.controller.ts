@@ -5,6 +5,7 @@ import { Transaction } from 'common-model';
 import {
   TransactionRpcService,
   TRANSACTION_RPC_SERVICE_NAME,
+  TransactionFilter,
 } from 'common-rpc';
 
 @Controller()
@@ -21,15 +22,11 @@ export class AppController implements TransactionRpcService {
 
   @GrpcMethod(TRANSACTION_RPC_SERVICE_NAME, 'getClientTransactions')
   async getClientTransactions(dto: {
-    data: {
-      startDate?: string;
-      endDate?: string;
-      skip?: number;
-      take?: number;
-    };
+    data: TransactionFilter;
     payload: { clientId: string };
   }): Promise<{ transactions: Transaction[] }> {
     const transactions = await this.appService.getClientTransactions(dto);
+
     return { transactions };
   }
 }

@@ -8,11 +8,11 @@ service AuthService {
   rpc logout (clientId) returns (RpcEmpty) {}
 }
 
+message RpcEmpty {}
+
 message clientId {
   string id = 1;
 }
-
-message RpcEmpty {}
 
 message loginRequest {
   string email = 1;

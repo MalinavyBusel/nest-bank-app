@@ -7,12 +7,13 @@ export interface TransactionRpcService extends BaseRpcService {
     payload: { clientId: string };
   }): Promise<{ id: string }>;
   getClientTransactions(getClientTransactionsRequest: {
-    data: {
-      startDate?: string;
-      endDate?: string;
-      skip?: number;
-      take?: number;
-    };
+    data: TransactionFilter;
     payload: { clientId: string };
   }): Promise<{ transactions: Transaction[] }>;
+}
+export interface TransactionFilter {
+  startDate?: string;
+  endDate?: string;
+  skip?: number;
+  take?: number;
 }

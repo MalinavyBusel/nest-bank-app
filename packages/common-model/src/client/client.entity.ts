@@ -12,7 +12,7 @@ export class ClientEntity {
   @Column({ type: 'enum', enum: clientTypesEnum })
   public type: clientTypesEnum;
 
-  @Column()
+  @Column({ unique: true })
   public email: string;
 
   @Column({ select: false })

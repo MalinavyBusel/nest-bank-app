@@ -5,3 +5,7 @@ export interface Transaction {
   amount: number;
   datetime: string;
 }
+
+export interface TransactionId {
+  id: string;
+}

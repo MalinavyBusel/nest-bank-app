@@ -3,3 +3,4 @@ export * from './bank';
 export * from './client';
 export * from './account';
 export * from './transaction';
+export * from './common';

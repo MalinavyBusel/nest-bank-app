@@ -25,7 +25,7 @@ import {
   BANK_RPC_SERVICE_NAME,
   BankRpcService,
 } from 'common-rpc';
-import { Bank } from 'common-model';
+import { Bank, BankId, BankOrNull, RecordsAffected } from 'common-model';
 
 @ApiTags('Bank API')
 @ApiBearerAuth()
@@ -53,9 +53,7 @@ export class BankController {
     description: 'the string representation of the target bank UUID',
   })
   @ApiOkResponse({ type: ResponseBankDto })
-  async getById(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<{ bank: Bank | null }> {
+  async getById(@Param('id', ParseUUIDPipe) id: string): Promise<BankOrNull> {
     return await this.bankRpcService.get({ id });
   }
 
@@ -67,7 +65,7 @@ export class BankController {
   @ApiBody({ type: CreateBankDto })
   async create(
     @Body(ValidationPipe) createBankDto: CreateBankDto,
-  ): Promise<{ id: string }> {
+  ): Promise<BankId> {
     return await this.bankRpcService.create(createBankDto);
   }
 
@@ -84,7 +82,7 @@ export class BankController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(ValidationPipe) updateBankDto: UpdateBankDto,
-  ): Promise<{ affected: number }> {
+  ): Promise<RecordsAffected> {
     return await this.bankRpcService.update({ id, ...updateBankDto });
   }
 
@@ -99,7 +97,7 @@ export class BankController {
   })
   async delete(
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<{ affected: number }> {
+  ): Promise<RecordsAffected> {
     return await this.bankRpcService.delete({ id });
   }
 }

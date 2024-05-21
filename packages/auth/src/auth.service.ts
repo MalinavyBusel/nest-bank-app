@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ClientEntity } from 'common-model';
+import { ClientEntity, ClientId } from 'common-model';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { status } from 'grpc';
@@ -68,7 +68,7 @@ export class AuthService {
     return this.generateTokens(client);
   }
 
-  public async logout(data: { id: string }): Promise<void> {
+  public async logout(data: ClientId): Promise<void> {
     await this.clientRepository.update({ id: data.id }, { refreshToken: null });
   }
 

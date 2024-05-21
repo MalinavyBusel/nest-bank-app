@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AccountEntity, Account } from 'common-model';
+import {
+  AccountEntity,
+  Account,
+  ClientIdFromToken,
+  AccountId,
+} from 'common-model';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,8 +16,8 @@ export class AccountService {
   ) {}
 
   async getById(getRequest: {
-    payload: { clientId: string };
-    data: { id: string };
+    payload: ClientIdFromToken;
+    data: AccountId;
   }): Promise<Account | null> {
     return this.accountRepository.findOneBy({
       id: getRequest.data.id,
@@ -21,7 +26,7 @@ export class AccountService {
   }
 
   async create(createRequest: {
-    payload: { clientId: string };
+    payload: ClientIdFromToken;
     data: Omit<Account, 'id' | 'clientId'>;
   }): Promise<string> {
     const insertResult = await this.accountRepository
@@ -48,8 +53,8 @@ export class AccountService {
   }
 
   async delete(deleteRequest: {
-    payload: { clientId: string };
-    data: { id: string };
+    payload: ClientIdFromToken;
+    data: AccountId;
   }): Promise<number> {
     const deleteResult = await this.accountRepository.delete({
       id: deleteRequest.data.id,
@@ -59,7 +64,7 @@ export class AccountService {
     return deleteResult.affected ?? 0;
   }
 
-  getClientAccounts(payload: { clientId: string }) {
+  getClientAccounts(payload: ClientIdFromToken) {
     return this.accountRepository.findBy({ clientId: payload.clientId });
   }
 }

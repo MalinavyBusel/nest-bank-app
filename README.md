@@ -37,6 +37,8 @@ postgres vars:
 
 jwt vars:
  - JWT_SECRET
+ - ACCESS_TOKEN_EXPIRATION
+ - REFRESH_TOKEN_EXPIRATION
 
 ## Running the app
 

@@ -75,7 +75,7 @@ export class AuthService {
   private async generateTokens(client: ClientEntity) {
     const refreshToken = await this.jwtService.signAsync(
       { sub: client.id },
-      { expiresIn: '60d' },
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION },
     );
     const hashedToken = createHash('sha256')
       .update(refreshToken)
@@ -88,7 +88,7 @@ export class AuthService {
 
     return {
       accessToken: await this.jwtService.signAsync(payload, {
-        expiresIn: '30m',
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
       }),
       refreshToken,
     };

@@ -10,3 +10,15 @@ export enum clientTypesEnum {
   ENTITY = 'entity',
   INDIVIDUAL = 'individual',
 }
+
+export interface ClientId {
+  id: string;
+}
+
+export interface ClientIdFromToken {
+  clientId: string;
+}
+
+export interface ClientOrNull {
+  client: Omit<Client, 'password' | 'refreshToken'> | null;
+}

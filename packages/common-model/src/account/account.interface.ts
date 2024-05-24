@@ -11,3 +11,11 @@ export enum currencyTypesEnum {
   EUR = 'EUR',
   RUB = 'RUB',
 }
+
+export interface AccountId {
+  id: string;
+}
+
+export interface AccountOrNull {
+  account: Account | null;
+}

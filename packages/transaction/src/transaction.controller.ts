@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { GrpcMethod } from '@nestjs/microservices';
-import { Transaction } from 'common-model';
+import { ClientIdFromToken, Transaction, TransactionId } from 'common-model';
 import {
   TransactionRpcService,
   TRANSACTION_RPC_SERVICE_NAME,
@@ -15,15 +15,15 @@ export class TransactionController implements TransactionRpcService {
   @GrpcMethod(TRANSACTION_RPC_SERVICE_NAME, 'create')
   async create(createRequest: {
     data: Omit<Transaction, 'id' | 'datetime'>;
-    payload: { clientId: string };
-  }): Promise<{ id: string }> {
+    payload: ClientIdFromToken;
+  }): Promise<TransactionId> {
     return this.transactionService.create(createRequest);
   }
 
   @GrpcMethod(TRANSACTION_RPC_SERVICE_NAME, 'getClientTransactions')
   async getClientTransactions(dto: {
     data: TransactionFilter;
-    payload: { clientId: string };
+    payload: ClientIdFromToken;
   }): Promise<{ transactions: Transaction[] }> {
     const transactions =
       await this.transactionService.getClientTransactions(dto);

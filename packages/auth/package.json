@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": "~20.12.0"
+    "node": "^20.12.0"
   },
   "scripts": {
     "build": "nest build",
@@ -18,9 +18,9 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
-    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-jwt": "~4.0.1",
     "common-rpc": "*",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "~4.0.1"
   },
   "devDependencies": {}
 }

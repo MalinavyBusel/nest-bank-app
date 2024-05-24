@@ -11,7 +11,9 @@ export class ClientService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
 
-  async getById(id: string): Promise<Omit<Client, 'password'> | null> {
+  async getById(
+    id: string,
+  ): Promise<Omit<Client, 'password' | 'refreshToken'> | null> {
     return this.clientRepository.findOneBy({ id });
   }
 

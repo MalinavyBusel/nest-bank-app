@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": "~20.12.0"
+    "node": "^20.12.0"
   },
   "scripts": {
     "build": "nest build",
@@ -18,7 +18,7 @@
     "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix"
   },
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "~1.6.8",
     "common-rpc": "*"
   },
   "devDependencies": {}

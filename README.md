@@ -27,6 +27,14 @@ $ yarn install
     bank - postgres vars\
     client - postgres vars\
     transaction - postgres vars
+4. Run database with docker
+```bash
+$ cd docker && docker compose up
+```
+
+
+
+## Env variables
 
 postgres vars:
  - POSTGRES_PASSWORD
@@ -39,6 +47,8 @@ jwt vars:
  - JWT_SECRET
  - ACCESS_TOKEN_EXPIRATION
  - REFRESH_TOKEN_EXPIRATION
+
+
 
 ## Running the app
 

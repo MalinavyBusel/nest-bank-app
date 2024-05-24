@@ -8,6 +8,7 @@ import {
   LoginResponse,
   RefreshRequest,
 } from 'common-rpc';
+import { ClientId } from 'common-model';
 
 @Controller()
 export class AuthController implements AuthRpcService {
@@ -19,7 +20,7 @@ export class AuthController implements AuthRpcService {
   }
 
   @GrpcMethod(AUTH_RPC_SERVICE_NAME, 'logout')
-  logout(data: { id: string }): Promise<void> {
+  logout(data: ClientId): Promise<void> {
     return this.authService.logout(data);
   }
 
